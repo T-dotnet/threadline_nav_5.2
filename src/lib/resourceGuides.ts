@@ -1,7 +1,13 @@
 import { Child, GuideCardProps } from "../types";
 
-import img2912 from "../assets/images/IMG_2912.jpeg";
-import img2947 from "../assets/images/IMG_2947.jpeg";
+import bedtimeRoutineImg from "../assets/images/bedtime_routine_thumbnail_1781935312413.jpg";
+import sleepAdhdImg from "../assets/images/sleep_adhd_thumbnail_1781935326757.jpg";
+import classroomFatigueImg from "../assets/images/optimized/classroom-fatigue-900.jpg";
+import breathingExercisesImg from "../assets/images/optimized/breathing-exercises-900.jpg";
+import pediatricianQuestionsImg from "../assets/images/optimized/pediatrician-questions-900.jpg";
+import greenPlumBedtimeImg from "../assets/images/optimized/green-plum-bedtime-routine-900.jpg";
+import greenPlumClassroomImg from "../assets/images/optimized/green-plum-classroom-support-900.jpg";
+import greenPlumBreathingImg from "../assets/images/optimized/green-plum-breathing-rhythm-900.jpg";
 
 export interface ResourceGuide extends GuideCardProps {
   catId: string;
@@ -15,7 +21,7 @@ const ALL_GUIDES: ResourceGuide[] = [
     description:
       "A visual template with calming colour shifts — steps to swap screen time for sensory, hands-on cues that help Maya settle.",
     readTime: "8 min read",
-    image: img2912,
+    image: bedtimeRoutineImg,
   },
   {
     category: "Health & Clinical",
@@ -24,7 +30,7 @@ const ALL_GUIDES: ResourceGuide[] = [
     description:
       "Clear, reassuring neuroscience on why dopamine profiles affect circadian rhythms — and how to work with Maya's natural bedtime schedule rather than against it.",
     readTime: "6 min read",
-    image: img2947,
+    image: sleepAdhdImg,
   },
   {
     category: "Tools & Templates",
@@ -33,7 +39,7 @@ const ALL_GUIDES: ResourceGuide[] = [
     description:
       "A simple printable question list to bring to your next check-up, prompting useful conversations about the biological factors affecting Maya's sleep.",
     readTime: "5 min read",
-    image: img2912,
+    image: pediatricianQuestionsImg,
   },
   {
     category: "Classroom Strategies",
@@ -42,7 +48,7 @@ const ALL_GUIDES: ResourceGuide[] = [
     description:
       "Creative, respectful options the school can use to help Maya restabilise — without feeling singled out — when fatigue spikes around 10:30 AM.",
     readTime: "10 min read",
-    image: img2947,
+    image: classroomFatigueImg,
   },
   {
     category: "Emotional Regulation",
@@ -51,7 +57,34 @@ const ALL_GUIDES: ResourceGuide[] = [
     description:
       "Short audio prompts and play-based breathing — like blowing out imaginary stars — for a calm, cooperative parent-child bedtime ritual.",
     readTime: "7 min read",
-    image: img2912,
+    image: breathingExercisesImg,
+  },
+  {
+    category: "Tools & Templates",
+    catId: "tools",
+    title: "Green Room Bedtime Routine Map",
+    description:
+      "A mint-and-plum routine map for turning the last hour before bed into a calmer sequence of visible, repeatable cues.",
+    readTime: "6 min read",
+    image: greenPlumBedtimeImg,
+  },
+  {
+    category: "Classroom Strategies",
+    catId: "classroom",
+    title: "Quiet Classroom Reset Script",
+    description:
+      "A teacher-facing script for offering support without drawing attention, built around a soft reset and one clear next step.",
+    readTime: "5 min read",
+    image: greenPlumClassroomImg,
+  },
+  {
+    category: "Emotional Regulation",
+    catId: "emotional",
+    title: "Mint-and-Plum Breathing Cards",
+    description:
+      "Simple co-regulation prompts families can use when big feelings arrive before sleep, homework, or a difficult transition.",
+    readTime: "4 min read",
+    image: greenPlumBreathingImg,
   },
 ];
 
@@ -63,7 +96,7 @@ const INTAKE_GUIDES: ResourceGuide[] = [
     description:
       "A short planning guide for the concerns, hopes, and examples worth bringing into the first conversation.",
     readTime: "5 min read",
-    image: img2912,
+    image: greenPlumBreathingImg,
   },
   {
     category: "Documents",
@@ -72,7 +105,7 @@ const INTAKE_GUIDES: ResourceGuide[] = [
     description:
       "Reports, teacher notes, work samples, and parent observations that can help the clinician understand the full picture.",
     readTime: "4 min read",
-    image: img2947,
+    image: pediatricianQuestionsImg,
   },
   {
     category: "Observation",
@@ -81,7 +114,7 @@ const INTAKE_GUIDES: ResourceGuide[] = [
     description:
       "Simple prompts for spotting patterns around routines, transitions, sleep, school, and friendships before the call.",
     readTime: "6 min read",
-    image: img2912,
+    image: greenPlumClassroomImg,
   },
   {
     category: "Family Notes",
@@ -90,7 +123,7 @@ const INTAKE_GUIDES: ResourceGuide[] = [
     description:
       "How to describe what you are seeing without needing clinical language or a finished explanation.",
     readTime: "7 min read",
-    image: img2947,
+    image: greenPlumBedtimeImg,
   },
 ];
 

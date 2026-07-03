@@ -38,10 +38,10 @@ export default function RoadmapPage({
 }) {
   const { currentChild } = useCurrentChild();
   const { isParentClarity } = useDisplayMode();
-  const isLiam = isMaintenancePhase(currentChild);
-  const isNoahStarting = isPlanNotStarted(currentChild);
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const isStartingPlan = isPlanNotStarted(currentChild);
   const isNewChild = Boolean(currentChild.isNew);
-  const showParentClarity = isParentClarity && !isNewChild && !isLiam && !isNoahStarting;
+  const showParentClarity = isParentClarity && !isNewChild && !isMaintenancePlan && !isStartingPlan;
   const newChildSetupStatus = getChildSubheading(currentChild).toLowerCase();
   const sessionStatus = getChildSessionStatus(currentChild);
   const sessionMeta = sessionStatus === "booked"
@@ -60,7 +60,7 @@ export default function RoadmapPage({
       <PageContainer>
         <PageHeader
         kicker="Roadmap · What to do"
-        title={isNewChild ? "Your setup, in clear steps." : isLiam ? "Plan complete." : isNoahStarting ? "Plan ready to start." : "Your plan, in clear steps."}
+        title={isNewChild ? "Your setup, in clear steps." : isMaintenancePlan ? "Plan complete." : isStartingPlan ? "Plan ready to start." : "Your plan, in clear steps."}
         titleClassName="md:leading-[4.5rem]"
         titleWidthClassName="max-w-[16ch]"
         className={isNewChild ? "mb-12" : "mb-24"}
@@ -82,9 +82,9 @@ export default function RoadmapPage({
         quote={
           isNewChild
             ? `A short setup roadmap for getting ready for ${currentChild.name}'s first session. Finish the essentials, share existing context if you have it, then the support roadmap opens after review.`
-            : isLiam
+            : isMaintenancePlan
             ? "Liam has successfully navigated the core roadmap. All initial intervention steps are finalized and verified."
-            : isNoahStarting
+            : isStartingPlan
             ? "Noah's first quarter roadmap is ready, but nothing has moved yet. Start with one practical support, then use the first observations to shape what comes next."
             : showParentClarity
             ? `This is the practical plan for ${currentChild.name}: share the teacher pack first, agree the small classroom changes, then watch whether focus and home frustration ease.`
@@ -102,8 +102,8 @@ export default function RoadmapPage({
           <div className="font-medium text-[0.84rem] opacity-70">
             Focused on{" "}
             <strong className="opacity-100 ml-1">
-              {isNewChild ? "Intake setup" : isLiam ? "Maintenance & Enrichment" : isNoahStarting ? "First support step" : "Classroom attention"}
-            </strong> · {isNewChild ? newChildSetupStatus : isLiam ? "Goal status: 100%" : isNoahStarting ? "Goal status: 0%" : "your Now priority"}
+              {isNewChild ? "Intake setup" : isMaintenancePlan ? "Maintenance & Enrichment" : isStartingPlan ? "First support step" : "Classroom attention"}
+            </strong> · {isNewChild ? newChildSetupStatus : isMaintenancePlan ? "Goal status: 100%" : isStartingPlan ? "Goal status: 0%" : "your Now priority"}
           </div>
         }
       />
@@ -115,7 +115,7 @@ export default function RoadmapPage({
             Recommended next actions
           </SectionLabel>
           <SectionTitle>
-            {isLiam ? "Past milestones." : isNoahStarting ? "Start the first step." : showParentClarity ? "Start with the teacher pack." : "Do these, in this order."}
+            {isMaintenancePlan ? "Past milestones." : isStartingPlan ? "Start the first step." : showParentClarity ? "Start with the teacher pack." : "Do these, in this order."}
           </SectionTitle>
         </div>
 
@@ -151,7 +151,7 @@ export default function RoadmapPage({
                   : "Choose a session time when you are ready to complete the assessment setup."}
               />
             </>
-          ) : isLiam ? (
+          ) : isMaintenancePlan ? (
             <>
               <TimelineStep
                 done
@@ -175,7 +175,7 @@ export default function RoadmapPage({
                 description="Liam has achieved independent regulation milestones. No further active routines required."
               />
             </>
-          ) : isNoahStarting ? (
+          ) : isStartingPlan ? (
             <>
               <TimelineStep
                 active
@@ -248,11 +248,11 @@ export default function RoadmapPage({
               <StrategyCard
                 title="At school"
                 icon={<FileText className="w-[18px] h-[18px] stroke-[1.8]" />}
-                items={isLiam ? [
+                items={isMaintenancePlan ? [
                   "Liam leads small peer groups during creative projects.",
                   "Utilize advanced logic puzzles for extension during down time.",
                   "Monthly check-in with teacher to maintain social velocity.",
-                ] : isNoahStarting ? [
+                ] : isStartingPlan ? [
                   "Choose one classroom routine to try first.",
                   "Keep the instruction short and visible.",
                   "Notice whether Noah can repeat it without extra adult load.",
@@ -268,11 +268,11 @@ export default function RoadmapPage({
               <StrategyCard
                 title="At home"
                 icon={<Home className="w-[18px] h-[18px] stroke-[1.8]" />}
-                items={isLiam ? [
+                items={isMaintenancePlan ? [
                   "Encourage independent hobby exploration (e.g., coding, building).",
                   "Shift from co-regulation to independent reflection sessions.",
                   "Allow Liam to choose his own organizational tools.",
-                ] : isNoahStarting ? [
+                ] : isStartingPlan ? [
                   "Keep the first home support predictable and brief.",
                   "Write down one example of what helped or got in the way.",
                   "Avoid adding a second routine until the first one is usable.",
@@ -303,9 +303,9 @@ export default function RoadmapPage({
         <SectionDescription className="mb-6">
           {isNewChild ? (
             `Optional ways to give the clinician more context before ${currentChild.name}'s assessment. Use what is useful; nothing here needs to become a new task list.`
-          ) : isLiam ? (
+          ) : isMaintenancePlan ? (
             "Liam's support structure is now self-sustaining. These options are for future enrichment."
-          ) : isNoahStarting ? (
+          ) : isStartingPlan ? (
             "Noah's first plan is just beginning. These supports are useful only if they make the first routine easier to start, not if they add more tasks."
           ) : showParentClarity ? (
             `These are options to discuss, not extra homework. Start with the teacher pack, then add support only if ${currentChild.name}'s focus still needs it.`
@@ -316,18 +316,18 @@ export default function RoadmapPage({
 
         <div className="border-b border-black/10">
           <AreaItem
-            title={isNewChild ? "Upload existing reports" : isLiam ? "Leadership mentorship" : isNoahStarting ? "Starter school support" : "School support plan"}
-            description={isNewChild ? "Add any previous assessments, school notes, examples of work, or health letters you already have." : isLiam ? "Connecting Liam with older student mentors to foster leadership skills." : isNoahStarting ? "A small classroom adjustment to try first, then review against Noah's baseline." : "Formalise the classroom accommodations so they hold steady across teachers and terms."}
+            title={isNewChild ? "Upload existing reports" : isMaintenancePlan ? "Leadership mentorship" : isStartingPlan ? "Starter school support" : "School support plan"}
+            description={isNewChild ? "Add any previous assessments, school notes, examples of work, or health letters you already have." : isMaintenancePlan ? "Connecting Liam with older student mentors to foster leadership skills." : isStartingPlan ? "A small classroom adjustment to try first, then review against Noah's baseline." : "Formalise the classroom accommodations so they hold steady across teachers and terms."}
             status={isNewChild ? "Optional" : "Suggested"}
           />
           <AreaItem
-            title={isNewChild ? "Share school context" : isLiam ? "Creative Logic Course" : isNoahStarting ? "First-week notes" : "Occupational therapy — focus & regulation"}
-            description={isNewChild ? "Bring teacher notes, recent feedback, or a few examples of what feels harder at school." : isLiam ? "External curriculum to keep Liam's high creative retention challenged." : isNoahStarting ? "Short examples that show whether the first support can be repeated in real life." : "Worth considering if the home strategies need more hands-on support down the track."}
-            status={isLiam ? "Optional" : "Optional"}
+            title={isNewChild ? "Share school context" : isMaintenancePlan ? "Creative Logic Course" : isStartingPlan ? "First-week notes" : "Occupational therapy — focus & regulation"}
+            description={isNewChild ? "Bring teacher notes, recent feedback, or a few examples of what feels harder at school." : isMaintenancePlan ? "External curriculum to keep Liam's high creative retention challenged." : isStartingPlan ? "Short examples that show whether the first support can be repeated in real life." : "Worth considering if the home strategies need more hands-on support down the track."}
+            status={isMaintenancePlan ? "Optional" : "Optional"}
           />
           <AreaItem
-            title={isNewChild ? "Keep a short observation note" : isLiam ? "Annual Review" : isNoahStarting ? "First review" : "GP / paediatric review"}
-            description={isNewChild ? "Jot down patterns around routines, transitions, sleep, friendships, or school days if they stand out." : isLiam ? "Scheduled baseline check to ensure maintenance phase remains stable." : isNoahStarting ? "A check-in to decide whether the first support is working or needs to be simplified." : "Keep your GP in the loop so medical options can be discussed if and when they're relevant."}
+            title={isNewChild ? "Keep a short observation note" : isMaintenancePlan ? "Annual Review" : isStartingPlan ? "First review" : "GP / paediatric review"}
+            description={isNewChild ? "Jot down patterns around routines, transitions, sleep, friendships, or school days if they stand out." : isMaintenancePlan ? "Scheduled baseline check to ensure maintenance phase remains stable." : isStartingPlan ? "A check-in to decide whether the first support is working or needs to be simplified." : "Keep your GP in the loop so medical options can be discussed if and when they're relevant."}
             status={isNewChild ? "Optional" : "In place"}
           />
         </div>

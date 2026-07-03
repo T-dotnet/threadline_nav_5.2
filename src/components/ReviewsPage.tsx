@@ -24,7 +24,15 @@ import { PageContainer } from "./ui/PageContainer";
 import { Page } from "../types";
 import { useCurrentChild } from "../context/ChildContext";
 import { useDisplayMode } from "../context/DisplayModeContext";
-import { isMaintenancePhase, isPlanNotStarted, isSessionBooked as getIsSessionBooked } from "../lib/childStatus";
+import {
+  getChildReviewDate,
+  getDiagnosticPathwayCardCopy,
+  isMaintenancePhase,
+  isPlanNotStarted,
+  isSessionBooked as getIsSessionBooked,
+  isSessionPreviewUnavailable,
+  usesAssessmentCard,
+} from "../lib/childStatus";
 import watercolorBgImg from "../assets/images/optimized/watercolor-bg-900.jpg";
 
 export default function ReviewsPage({
@@ -36,10 +44,13 @@ export default function ReviewsPage({
 }) {
   const { currentChild } = useCurrentChild();
   const { isParentClarity } = useDisplayMode();
-  const isLiam = isMaintenancePhase(currentChild);
-  const isNoahStarting = isPlanNotStarted(currentChild);
-  const showParentClarity = isParentClarity && !currentChild.isNew && !isLiam && !isNoahStarting;
-  const reviewDate = isLiam ? "12 Dec" : isNoahStarting ? "8 Oct" : "12 Sep";
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const isStartingPlan = isPlanNotStarted(currentChild);
+  const showAssessmentCard = usesAssessmentCard(currentChild);
+  const sessionPreviewUnavailable = isSessionPreviewUnavailable(currentChild);
+  const diagnosticCardCopy = getDiagnosticPathwayCardCopy(currentChild);
+  const showParentClarity = isParentClarity && !currentChild.isNew && !isMaintenancePlan && !isStartingPlan;
+  const reviewDate = getChildReviewDate(currentChild, "short");
   const reviewTime = "4:00 pm";
   const isSessionBooked = getIsSessionBooked(currentChild);
   const showReviewDates = !currentChild.isNew || isSessionBooked;
@@ -54,7 +65,7 @@ export default function ReviewsPage({
     {
       state: "Next review",
       title: "First full review",
-      meta: showReviewDates ? (isNoahStarting ? "8 October" : "12 September") : "After first session",
+      meta: showReviewDates ? (isStartingPlan ? "8 October" : "12 September") : "After first session",
       description: "Revisit priorities, update the plan, and confirm what has improved and what needs attention next.",
       icon: <Calendar className="w-[19px] h-[19px] stroke-[1.8]" />,
     },
@@ -94,11 +105,11 @@ export default function ReviewsPage({
               { icon: Clock, children: "Updated 14 June 2026" },
               {
                 icon: Calendar,
-                children: isLiam
+                children: isMaintenancePlan
                   ? "Maintenance phase active"
-                  : isNoahStarting
-                  ? "First progress review 8 October"
-                  : "Next full review 12 September",
+                  : isStartingPlan
+                  ? `First progress review ${getChildReviewDate(currentChild)}`
+                  : `Next full review ${getChildReviewDate(currentChild)}`,
               },
             ]}
           />
@@ -106,7 +117,7 @@ export default function ReviewsPage({
       />
 
       {currentChild.isNew && (
-        <div className="w-full h-[200px] rounded-t-[24px] sm:rounded-t-[32px] overflow-hidden relative border border-black/5">
+        <div className="w-full h-[200px] rounded-t-[24px] sm:rounded-t-[32px] overflow-hidden relative">
           <img
             src={watercolorBgImg}
             alt="Watercolor Accent"
@@ -122,9 +133,9 @@ export default function ReviewsPage({
         <HeroQuoteCard
           kicker="The long view"
           quote={
-            isLiam ? (
+            isMaintenancePlan ? (
               `Liam has achieved all baseline targets. His profile now reflects a state of sustained developmental mastery.`
-            ) : isNoahStarting ? (
+            ) : isStartingPlan ? (
               `Noah's plan has a clean starting point. The next review will compare the baseline with what happens after the first support routine is actually tried.`
             ) : showParentClarity ? (
               `The main story is simple: ${currentChild.name}'s classroom focus is moving in the right direction. Sleep stays on the watchlist because it may explain the days where focus still dips.`
@@ -135,32 +146,32 @@ export default function ReviewsPage({
           className="h-full"
         />
 
-        {currentChild.isNew || currentChild.name === "Leo" || currentChild.name === "Nick" ? (
+        {currentChild.isNew || showAssessmentCard ? (
           <FirstSessionCard
             className="h-full"
-            isBooked={(currentChild.name === "Leo") ? false : isSessionBooked}
+            isBooked={sessionPreviewUnavailable ? false : isSessionBooked}
             isCancelled={false}
             date={reviewDate}
             time={reviewTime}
-            titleText={(currentChild.name === "Leo" || currentChild.name === "Nick") ? "Diagnostic Assessment" : undefined}
-            descriptionText={(currentChild.name === "Leo") ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet." : undefined}
-            buttonText={(currentChild.name === "Leo") ? "Book appointment" : undefined}
+            titleText={showAssessmentCard ? diagnosticCardCopy.titleText : undefined}
+            descriptionText={showAssessmentCard ? diagnosticCardCopy.descriptionText : undefined}
+            buttonText={showAssessmentCard && sessionPreviewUnavailable ? diagnosticCardCopy.buttonText : undefined}
             onReschedule={() => onOpenSetup?.(5)}
             onBook={() => {
-              if (currentChild.name === "Leo" || currentChild.name === "Nick") {
+              if (showAssessmentCard) {
                 onOpenSetup?.(5);
               }
             }}
           />
         ) : (
           <PlanProgressCard
-            progress={isLiam ? 100 : isNoahStarting ? 0 : 65}
-            statusText={isLiam ? "Plan completed" : isNoahStarting ? "Plan in formulation" : "In progress"}
-            nextReview={isNoahStarting ? "Not booked" : reviewDate}
+            progress={isMaintenancePlan ? 100 : isStartingPlan ? 0 : 65}
+            statusText={isMaintenancePlan ? "Plan completed" : isStartingPlan ? "Plan in formulation" : "In progress"}
+            nextReview={isStartingPlan ? "Not booked" : reviewDate}
             title="This quarter's plan"
             className="w-full h-full"
             onReschedule={() => onOpenSetup?.(5)}
-            rescheduleLabel={isNoahStarting ? "Book now" : undefined}
+            rescheduleLabel={isStartingPlan ? "Book now" : undefined}
           />
         )}
       </div>
@@ -172,12 +183,12 @@ export default function ReviewsPage({
             What's changed
           </SectionLabel>
           <SectionTitle>
-            {isLiam ? "Current status summaries." : isNoahStarting ? "What we are waiting to learn." : "How the picture has moved."}
+            {isMaintenancePlan ? "Current status summaries." : isStartingPlan ? "What we are waiting to learn." : "How the picture has moved."}
           </SectionTitle>
         </div>
 
         <div className="border-y border-black/10">
-          {isLiam ? (
+          {isMaintenancePlan ? (
             <>
               <AreaItem
                 title="Self-Correction"
@@ -198,7 +209,7 @@ export default function ReviewsPage({
                 icon={<ArrowUpRight className="w-3 h-3 stroke-[2.4]" />}
               />
             </>
-          ) : isNoahStarting ? (
+          ) : isStartingPlan ? (
             <>
               <AreaItem
                 title="First support routine"

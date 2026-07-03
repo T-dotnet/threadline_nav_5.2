@@ -17,6 +17,7 @@ import {
   NotebookPen,
   Palette,
   ClipboardList,
+  Check,
 } from "lucide-react";
 import { Child, Page } from "../types";
 import { Avatar } from "./ui/Avatar";
@@ -25,6 +26,12 @@ import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { isNewChildAllowedPage } from "../navigation";
 import { getChildSessionStatus, getChildSubheading } from "../lib/childStatus";
+import {
+  THREADLINE_STYLE_OPTIONS,
+  applyThreadlineVisualStyle,
+  getStoredThreadlineVisualStyle,
+  type ThreadlineVisualStyle,
+} from "../lib/visualStyles";
 
 import { useCurrentChild } from "../context/ChildContext";
 
@@ -43,12 +50,12 @@ export default function TopBar({
   onPageChange,
 }: TopBarProps) {
   const { currentChild, childrenList, setChild } = useCurrentChild();
-  const isLeo = currentChild.name === "Leo" || currentChild.name === "Nick";
   const isAllChildrenView = currentPage === "all-children";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAlertsOpen, setIsAlertsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [visualStyle, setVisualStyle] = useState<ThreadlineVisualStyle>(() => getStoredThreadlineVisualStyle());
   const [updateFilter, setUpdateFilter] = useState<UpdateFilter>("all");
   const [readUpdateIds, setReadUpdateIds] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -120,6 +127,11 @@ export default function TopBar({
     new: "New",
     unread: "Unread",
     read: "Read",
+  };
+
+  const handleVisualStyleSelect = (style: ThreadlineVisualStyle) => {
+    setVisualStyle(style);
+    applyThreadlineVisualStyle(style);
   };
   const updateStatusClasses: Record<UpdateStatus, string> = {
     new: "bg-amber-50 text-amber-700",
@@ -554,7 +566,7 @@ export default function TopBar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute top-14 right-0 w-64 bg-white rounded-2xl border border-black/5 shadow-dropdown py-2.5 z-50 font-sans"
+                className="absolute top-14 right-0 w-[21rem] bg-white rounded-2xl border border-black/5 shadow-dropdown py-2.5 z-50 font-sans"
               >
                 <div className="px-4.5 py-2 mb-1.5 border-b border-black/5">
                   <span className="text-[0.65rem] tracking-[0.12em] uppercase text-slate-400 font-medium block mb-0.5">
@@ -591,6 +603,64 @@ export default function TopBar({
                       Design System
                     </span>
                   </button>
+
+                  <div className="my-1.5 border-t border-black/5 pt-2.5">
+                    <div className="px-3 pb-2">
+                      <span className="text-[0.65rem] tracking-[0.14em] uppercase text-slate-400 font-medium">
+                        Profile style
+                      </span>
+                    </div>
+                    <div className="grid gap-1" role="radiogroup" aria-label="Profile style selector">
+                      {THREADLINE_STYLE_OPTIONS.map((option) => {
+                        const isActive = visualStyle === option.id;
+
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={isActive}
+                            onClick={() => handleVisualStyleSelect(option.id)}
+                            className={cn(
+                              "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors min-h-[54px]",
+                              isActive
+                                ? "bg-[var(--color-thread-light-green)]/45 text-[var(--style-light-surface-text)]"
+                                : "hover:bg-slate-50 text-slate-700"
+                            )}
+                          >
+                            <span className="flex h-8 w-12 shrink-0 overflow-hidden rounded-full border border-black/5 bg-white shadow-xs">
+                              {option.swatches.map((swatch) => (
+                                <span
+                                  key={`${option.id}-${swatch}`}
+                                  className="h-full flex-1"
+                                  style={{ backgroundColor: swatch }}
+                                />
+                              ))}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[0.85rem] font-medium leading-snug text-slate-800">
+                                {option.label}
+                              </span>
+                              <span className="block truncate text-[0.72rem] leading-snug text-slate-500">
+                                {option.description}
+                              </span>
+                            </span>
+                            <span
+                              className={cn(
+                                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors",
+                                isActive
+                                  ? "border-[var(--color-thread-mid-green)] bg-[var(--color-thread-mid-green)] text-white"
+                                  : "border-black/10 text-transparent"
+                              )}
+                              aria-hidden="true"
+                            >
+                              <Check className="h-3.5 w-3.5 stroke-[2.2]" />
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   <button
                     onClick={() => {

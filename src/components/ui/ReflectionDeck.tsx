@@ -24,7 +24,7 @@ import { SectionTitle } from './SectionTitle';
 import { SlideFooter } from './reflection-deck/SlideFooter';
 import { WholeMindWheel } from './reflection-deck/WholeMindWheel';
 import { useCurrentChild } from '../../context/ChildContext';
-import { getChildSubheading } from '../../lib/childStatus';
+import { getChildSubheading, getChildSubheadingByName } from '../../lib/childStatus';
 
 export interface ReflectionDeckData {
   childName: string;
@@ -66,19 +66,9 @@ export function ReflectionDeck({
 }: ReflectionDeckProps) {
   const [slideIndex, setSlideIndex] = useState(isPathwayOnly ? 3 : (initialSlideIndex ?? 0));
   const { currentChild } = useCurrentChild();
-  const getStatusByName = (name: string) => {
-    if (name === "Maya") return "Navigator Care";
-    if (name === "Liam") return "Navigator Care";
-    if (name === "Leo" || name === "Nick") return "Diagnostic Assessment";
-    if (name === "Noah") return "Navigator Care";
-    if (name === "Sophia") return "Navigator Care";
-    if (name === "Tom") return "Intake in progress";
-    if (name === "Ava" || name === "Chloe") return "Assessment pending";
-    return "";
-  };
   const activeStatus = (currentChild && currentChild.name === childName)
     ? getChildSubheading(currentChild)
-    : getStatusByName(childName);
+    : getChildSubheadingByName(childName);
 
   const isDiagnosticActive = activeStatus === 'Diagnostic Assessment';
   const isNavigatorActive = activeStatus === 'Navigator Care';

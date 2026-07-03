@@ -34,9 +34,9 @@ export default function PrioritiesPage({
 }) {
   const { currentChild } = useCurrentChild();
   const { isParentClarity } = useDisplayMode();
-  const isLiam = isMaintenancePhase(currentChild);
-  const isNoahStarting = isPlanNotStarted(currentChild);
-  const showParentClarity = isParentClarity && !currentChild.isNew && !isLiam && !isNoahStarting;
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const isStartingPlan = isPlanNotStarted(currentChild);
+  const showParentClarity = isParentClarity && !currentChild.isNew && !isMaintenancePlan && !isStartingPlan;
   const [activePriorityId, setActivePriorityId] = useState("sleep");
 
   const newChildConnectionData = useMemo(() => [
@@ -72,12 +72,12 @@ export default function PrioritiesPage({
 
   const prioritiesData = useMemo(() => [
     {
-      id: isLiam ? "review-evidence" : "sleep",
-      label: isLiam ? "Review input" : isNoahStarting ? "Watch first" : "On the watchlist",
-      title: isLiam ? "Review evidence" : isNoahStarting ? "Settling rhythm" : "Sleep",
-      description: isLiam
+      id: isMaintenancePlan ? "review-evidence" : "sleep",
+      label: isMaintenancePlan ? "Review input" : isStartingPlan ? "Watch first" : "On the watchlist",
+      title: isMaintenancePlan ? "Review evidence" : isStartingPlan ? "Settling rhythm" : "Sleep",
+      description: isMaintenancePlan
         ? "The next priority order should start from review evidence: what stayed stable, what changed, and whether any new pattern is strong enough to become the next focus."
-        : isNoahStarting
+        : isStartingPlan
         ? "Noah's day-to-day rhythm is not the Now priority, but it may affect whether the first school support is easy to repeat."
         : showParentClarity
         ? `Sleep is not a ranked priority yet. We are watching it because tired mornings can make ${currentChild.name}'s focus harder at school.`
@@ -85,12 +85,12 @@ export default function PrioritiesPage({
       image: img2912
     },
     {
-      id: isLiam ? "maintenance" : "attention",
-      label: isLiam ? "Current rhythm" : isNoahStarting ? "First focus" : "Current focus",
-      title: isLiam ? "Maintenance" : isNoahStarting ? "Classroom starting routine" : "Attention",
-      description: isLiam
+      id: isMaintenancePlan ? "maintenance" : "attention",
+      label: isMaintenancePlan ? "Current rhythm" : isStartingPlan ? "First focus" : "Current focus",
+      title: isMaintenancePlan ? "Maintenance" : isStartingPlan ? "Classroom starting routine" : "Attention",
+      description: isMaintenancePlan
         ? "Because the quarter is complete, the default rhythm is maintenance. The review decides whether to keep it light or open a new active focus."
-        : isNoahStarting
+        : isStartingPlan
         ? "Noah's first support target is classroom focus, but progress has not started yet. The aim is to make one support routine visible and repeatable."
         : showParentClarity
         ? `This is the main thing to act on now. Helping ${currentChild.name} focus in class should make school feel easier and may reduce knock-on frustration at home.`
@@ -98,12 +98,12 @@ export default function PrioritiesPage({
       image: classroomImg
     },
     {
-      id: isLiam ? "capacity" : "regulation",
-      label: isLiam ? "Family fit" : isNoahStarting ? "Next support" : "Next phase",
-      title: isLiam ? "Capacity" : isNoahStarting ? "After-school reset" : "Emotional regulation",
-      description: isLiam
+      id: isMaintenancePlan ? "capacity" : "regulation",
+      label: isMaintenancePlan ? "Family fit" : isStartingPlan ? "Next support" : "Next phase",
+      title: isMaintenancePlan ? "Capacity" : isStartingPlan ? "After-school reset" : "Emotional regulation",
+      description: isMaintenancePlan
         ? "The next plan should fit family capacity after a completed quarter. A strong result does not automatically mean adding more work."
-        : isNoahStarting
+        : isStartingPlan
         ? "Home regulation matters, but it should not become a second plan before the first school routine has had a chance to settle."
         : showParentClarity
         ? `Frustration at home matters, but it likely gets easier once school focus improves. That is why it is next, not ignored.`
@@ -111,19 +111,19 @@ export default function PrioritiesPage({
       image: breathingImg
     },
     {
-      id: isLiam ? "decision" : "school",
-      label: isLiam ? "After review" : isNoahStarting ? "Keep steady" : "Long-term goal",
-      title: isLiam ? "New order" : isNoahStarting ? "Group confidence" : "School participation",
-      description: isLiam
+      id: isMaintenancePlan ? "decision" : "school",
+      label: isMaintenancePlan ? "After review" : isStartingPlan ? "Keep steady" : "Long-term goal",
+      title: isMaintenancePlan ? "New order" : isStartingPlan ? "Group confidence" : "School participation",
+      description: isMaintenancePlan
         ? "Now, Next, and Later become visible again only after the review. Until then, the page should communicate completion and preparation, not a guessed next sequence."
-        : isNoahStarting
+        : isStartingPlan
         ? "Noah has social strengths to protect. This stays later for now so the first plan can focus on access to learning without overloading the week."
         : showParentClarity
         ? `The bigger goal is for ${currentChild.name} to feel confident and included at school. The current steps are building toward that.`
         : `Meaningful engagement in school life is the ultimate outcome of our current work. Every focus area we tackle today is a building block for this future independence.`,
       image: pediatricianImg
     }
-  ], [isLiam, isNoahStarting, showParentClarity, currentChild.name]);
+  ], [isMaintenancePlan, isStartingPlan, showParentClarity, currentChild.name]);
 
   const connectionData = currentChild.isNew ? newChildConnectionData : prioritiesData;
   const activePriority = connectionData.find(p => p.id === activePriorityId) || connectionData[0];
@@ -191,9 +191,9 @@ export default function PrioritiesPage({
           <HeroQuoteCard
             kicker="How we prioritise"
             quote={
-              isLiam
+              isMaintenancePlan
                 ? "Liam has met the goals for this quarter. The next Now, Next, and Later order will be decided with the clinician after the upcoming review session."
-                : isNoahStarting
+                : isStartingPlan
                 ? "Noah's page uses the same priority structure as an assessed profile, but the plan is at the start line: the first focus is ready, and progress evidence is still to come."
                 : showParentClarity
                 ? `${currentChild.name}'s plan starts with classroom attention because it is the clearest lever. Sleep stays on the watchlist, and home regulation comes next if it does not ease.`
@@ -203,13 +203,13 @@ export default function PrioritiesPage({
             rightNode={
               <HeroActionCard
                 icon={<Download className="w-[22px] h-[22px] stroke-[1.7]" />}
-                title={isLiam ? "Review prep" : isNoahStarting ? "Priority list" : "Priority list"}
-                subtitle={isLiam ? "Next session" : isNoahStarting ? "Starting point" : "Download PDF"}
+                title={isMaintenancePlan ? "Review prep" : isStartingPlan ? "Priority list" : "Priority list"}
+                subtitle={isMaintenancePlan ? "Next session" : isStartingPlan ? "Starting point" : "Download PDF"}
               />
             }
             action={
               <p className="text-[0.84rem] opacity-70 relative leading-relaxed max-w-[48ch]">
-                {isLiam ? (
+                {isMaintenancePlan ? (
                   <>
                     The next order will be based on{" "}
                     <strong className="opacity-100">review evidence</strong>,{" "}
@@ -217,7 +217,7 @@ export default function PrioritiesPage({
                     <strong className="opacity-100">family capacity</strong>, and{" "}
                     <strong className="opacity-100">whether enrichment or maintenance is the right next rhythm</strong>.
                   </>
-                ) : isNoahStarting ? (
+                ) : isStartingPlan ? (
                   <>
                     Each priority is weighed by{" "}
                     <strong className="opacity-100">day-to-day impact</strong>,{" "}
@@ -322,15 +322,15 @@ export default function PrioritiesPage({
           <>
             <div>
               <SectionLabel>
-                {isLiam ? "Completed quarter" : "Now · Next · Later"}
+                {isMaintenancePlan ? "Completed quarter" : "Now · Next · Later"}
               </SectionLabel>
               <SectionTitle>
-                {isLiam ? "Next priorities will be set after review." : isNoahStarting ? "Three priorities, ready to begin." : showParentClarity ? "What to act on now, next, and later." : "Three priorities, in order."}
+                {isMaintenancePlan ? "Next priorities will be set after review." : isStartingPlan ? "Three priorities, ready to begin." : showParentClarity ? "What to act on now, next, and later." : "Three priorities, in order."}
               </SectionTitle>
             </div>
 
             <div className="mt-6 flex flex-col">
-              {isLiam ? (
+              {isMaintenancePlan ? (
                 <>
                   <TimelineItem
                     tag="New"
@@ -383,9 +383,9 @@ export default function PrioritiesPage({
                 <>
                   <TimelineItem
                     tag="Now"
-                    title={isNoahStarting ? "Classroom starting routine" : "Classroom attention"}
-                    meta={isNoahStarting ? "High impact · ready to begin" : "High impact · clearest theme across every source"}
-                    content={isNoahStarting
+                    title={isStartingPlan ? "Classroom starting routine" : "Classroom attention"}
+                    meta={isStartingPlan ? "High impact · ready to begin" : "High impact · clearest theme across every source"}
+                    content={isStartingPlan
                       ? "Noah's first priority is classroom focus, but this is still a starting point. The useful next signal is whether one routine can be repeated without adding too much pressure."
                       : showParentClarity
                       ? `${currentChild.name}'s classroom focus is the clearest place to act now. If school feels easier, confidence and home routines often get easier too.`
@@ -396,16 +396,16 @@ export default function PrioritiesPage({
                       "Family burden": "Moderate",
                       "Family capacity": "Strong",
                     }}
-                    dependency={isNoahStarting ? "First progress here should create cleaner evidence for <strong>home regulation</strong> and <strong>school participation</strong>." : showParentClarity ? "This is expected to help with <strong>home frustration</strong> and <strong>school participation</strong>." : "Progress here should also ease <strong>Emotional regulation</strong> and <strong>school participation</strong>."}
-                    progress={isNoahStarting ? 0 : 35}
+                    dependency={isStartingPlan ? "First progress here should create cleaner evidence for <strong>home regulation</strong> and <strong>school participation</strong>." : showParentClarity ? "This is expected to help with <strong>home frustration</strong> and <strong>school participation</strong>." : "Progress here should also ease <strong>Emotional regulation</strong> and <strong>school participation</strong>."}
+                    progress={isStartingPlan ? 0 : 35}
                     active
                     isCollapsible={false}
                   />
                   <TimelineItem
                     tag="Next"
-                    title={isNoahStarting ? "After-school reset" : "Emotional regulation at home"}
-                    meta={isNoahStarting ? "Moderate impact · prepare once the first routine starts" : "Moderate impact · prepare over coming months"}
-                    content={isNoahStarting
+                    title={isStartingPlan ? "After-school reset" : "Emotional regulation at home"}
+                    meta={isStartingPlan ? "Moderate impact · prepare once the first routine starts" : "Moderate impact · prepare over coming months"}
+                    content={isStartingPlan
                       ? "After-school emotion and fatigue matter, but they should sit behind the first classroom routine for now. Once the school support is underway, this becomes easier to understand."
                       : showParentClarity
                       ? "Frustration around homework and routine changes is real. We are not ignoring it; we are giving attention-first support a chance to lower the pressure before adding another plan."
@@ -416,15 +416,15 @@ export default function PrioritiesPage({
                       "Family burden": "High",
                       "Depends on": "Attention",
                     }}
-                    dependency={isNoahStarting ? "Linked to <strong>Classroom starting routine</strong> — revisit once the first support has real evidence." : "Linked to <strong>Classroom attention</strong> — we'll revisit this as that improves."}
-                    progress={isNoahStarting ? 0 : 15}
+                    dependency={isStartingPlan ? "Linked to <strong>Classroom starting routine</strong> — revisit once the first support has real evidence." : "Linked to <strong>Classroom attention</strong> — we'll revisit this as that improves."}
+                    progress={isStartingPlan ? 0 : 15}
                     isCollapsible={false}
                   />
                   <TimelineItem
                     tag="Later"
-                    title={isNoahStarting ? "Group confidence" : "Friendships & social connection"}
-                    meta={isNoahStarting ? "Safe to protect · not a task today" : "Safe to wait · currently a strength"}
-                    content={isNoahStarting ? "Noah's connection with familiar adults and peers is a useful strength. It stays later so the first plan can focus on school access without turning every area into work." : `${currentChild.name} has warm, steady friendships and real empathy — this is going well, so it doesn't need your attention today. Naming it 'later' is deliberate: it means you can set it down without worrying you've missed something.`}
+                    title={isStartingPlan ? "Group confidence" : "Friendships & social connection"}
+                    meta={isStartingPlan ? "Safe to protect · not a task today" : "Safe to wait · currently a strength"}
+                    content={isStartingPlan ? "Noah's connection with familiar adults and peers is a useful strength. It stays later so the first plan can focus on school access without turning every area into work." : `${currentChild.name} has warm, steady friendships and real empathy — this is going well, so it doesn't need your attention today. Naming it 'later' is deliberate: it means you can set it down without worrying you've missed something.`}
                     facts={{
                       "Functional impact": "Low",
                       "Developmental risk": "Low",
@@ -449,7 +449,7 @@ export default function PrioritiesPage({
           </SectionLabel>
           {!currentChild.isNew && (
             <SectionTitle>
-              {isLiam ? "Review factors will shape the next order." : "Priorities aren't independent."}
+              {isMaintenancePlan ? "Review factors will shape the next order." : "Priorities aren't independent."}
             </SectionTitle>
           )}
           {currentChild.isNew && (
@@ -488,7 +488,7 @@ export default function PrioritiesPage({
 
       {/* Forward Button */}
       <PageFooterCTA
-        title={currentChild.isNew ? "Priority order will become clearer after review." : isLiam ? "The next priority order will be set in review." : "Now you know what matters most."}
+        title={currentChild.isNew ? "Priority order will become clearer after review." : isMaintenancePlan ? "The next priority order will be set in review." : "Now you know what matters most."}
         buttonText={currentChild.isNew ? "Back to understanding" : "See progress reviews"}
         onClick={() => onPageChange(currentChild.isNew ? "understanding" : "reviews")}
       />

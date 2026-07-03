@@ -10,7 +10,7 @@ export function SectionLabel({ children, className, ...props }: SectionLabelProp
   return (
     <span 
       className={cn(
-        "text-[0.75rem] tracking-[0.1em] uppercase text-[var(--color-thread-mid-green)] font-medium mb-2.5 block",
+        "thread-section-label",
         className
       )}
       {...props}

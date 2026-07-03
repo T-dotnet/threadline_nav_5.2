@@ -57,7 +57,7 @@ function FloatingDiaryCard({ entry }: { entry: FloatingDiaryEntry }) {
   return (
     <motion.div
       className={cn(
-        "absolute w-[17.5rem] rounded-[20px] rounded-tr-[26px] border border-black/5 bg-white px-5 py-4 shadow-premium",
+        "absolute w-[17.5rem] rounded-[20px] rounded-tr-[26px] bg-white px-5 py-4 shadow-premium",
         entry.className,
       )}
       style={{ rotate: `${entry.rotate}deg` }}

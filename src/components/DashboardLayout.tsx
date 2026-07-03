@@ -5,6 +5,7 @@ import QuickNoteComposer from "./QuickNoteComposer";
 import { Page } from "../types";
 import { AnimatePresence } from "motion/react";
 import { useCurrentChild } from "../context/ChildContext";
+import { shouldSuppressQuickNote } from "../lib/childStatus";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -23,7 +24,7 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   const showSidebar = currentPage !== "style-guide";
   const { currentChild } = useCurrentChild();
-  const isLeo = currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah";
+  const hideQuickNoteComposer = shouldSuppressQuickNote(currentChild);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--color-thread-off-white)] font-sans antialiased text-[var(--color-thread-darkest)]">
@@ -43,7 +44,7 @@ export default function DashboardLayout({
         </div>
       </main>
 
-      {currentPage !== "diary" && !isLeo && <QuickNoteComposer />}
+      {currentPage !== "diary" && !hideQuickNoteComposer && <QuickNoteComposer />}
     </div>
   );
 }

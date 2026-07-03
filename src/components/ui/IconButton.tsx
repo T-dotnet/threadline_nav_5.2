@@ -15,13 +15,13 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         {...buttonPress}
         type="button"
         className={cn(
-          "w-11 h-11 rounded-full bg-white border border-black/10 flex items-center justify-center text-slate-900 relative cursor-pointer hover:border-black/20 transition-all group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 shrink-0",
+          "thread-icon-button group",
           className
         )}
         {...(props as any)}
       >
         {hasBadge && (
-          <span className="absolute top-[10px] right-[11px] w-[7px] h-[7px] rounded-full bg-[var(--color-thread-mid-green)] border-2 border-white shadow-sm" />
+          <span className="thread-icon-button__badge" />
         )}
         {children}
       </motion.button>

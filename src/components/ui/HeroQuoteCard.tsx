@@ -31,7 +31,8 @@ export const HeroQuoteCard = React.forwardRef<HTMLDivElement, HeroQuoteCardProps
           hasRightNode
             ? "p-10 flex items-center justify-between gap-10 max-md:flex-col max-md:items-start"
             : "p-10 h-fit flex flex-col justify-between",
-          className
+          className,
+          "border-0"
         )}
         {...props}
       >

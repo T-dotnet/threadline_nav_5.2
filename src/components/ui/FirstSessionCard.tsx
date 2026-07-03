@@ -1,4 +1,5 @@
 import { CalendarClock } from "lucide-react";
+import { DEFAULT_CLINICIAN_NAME } from "../../lib/clinicalProvider";
 import { cn } from "../../lib/utils";
 import { Button } from "./Button";
 
@@ -23,7 +24,7 @@ export function FirstSessionCard({
   time,
   label = "First session",
   detail = "Telehealth",
-  provider = "Dr. Naomi Clark",
+  provider = DEFAULT_CLINICIAN_NAME,
   isBooked = true,
   isCancelled = false,
   onBook,
@@ -36,7 +37,7 @@ export function FirstSessionCard({
   return (
     <div
       className={cn(
-        "bg-[var(--color-thread-light-green)] text-[var(--color-thread-heading)] rounded-bl-[32px] p-7.5 flex flex-col h-full min-h-[260px]",
+        "bg-[var(--color-thread-light-green)] text-[var(--style-light-surface-text)] rounded-bl-[32px] p-7.5 flex flex-col h-full min-h-[260px]",
         className
       )}
     >
@@ -48,7 +49,7 @@ export function FirstSessionCard({
           <div className="w-12 h-12 rounded-full bg-[var(--color-thread-mid-green)] text-white flex items-center justify-center mb-6">
             <CalendarClock className="w-5 h-5 stroke-[1.8]" />
           </div>
-          <div className="font-serif text-[2.4rem] leading-[1.05] tracking-tight text-[var(--color-thread-heading)]">
+          <div className="font-serif text-[2.4rem] leading-[1.05] tracking-tight text-[var(--style-light-surface-text)]">
             {date}
           </div>
           <div className="mt-2 text-[1rem] opacity-75">
@@ -69,7 +70,7 @@ export function FirstSessionCard({
         </>
       ) : (
         <>
-          <div className="font-serif text-[2.2rem] leading-[1.05] tracking-tight text-[var(--color-thread-heading)]">
+          <div className="font-serif text-[2.2rem] leading-[1.05] tracking-tight text-[var(--style-light-surface-text)]">
             {titleText || "Choose your path"}
           </div>
           <p className="mt-3 text-[0.92rem] leading-relaxed opacity-70">

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { Child } from '../types';
 import { QUESTIONNAIRE_SECTIONS } from '../questionnaire';
+import { DEFAULT_CLINICIAN_SHORT_NAME } from '../lib/clinicalProvider';
 import watercolorBg from '../assets/images/optimized/watercolor-bg-900.jpg';
 
 interface ChildContextType {
@@ -77,7 +78,7 @@ const INITIAL_CHILDREN: Child[] = [
       sessionDay: '26',
       sessionTime: '4:00 pm',
       notices: ['Attention & focus', 'Behaviour & emotions', 'Speech & communication'],
-      notes: 'Nick is prepared for his telehealth session. The family has filled out the questionnaire and wants to review the key highlights before meeting with Dr. Clark.',
+      notes: `Nick is prepared for his telehealth session. The family has filled out the questionnaire and wants to review the key highlights before meeting with ${DEFAULT_CLINICIAN_SHORT_NAME}.`,
       questionnaireAnswers: {
         attention_focus: 'Talking or sharing ideas',
         behaviour_emotions: 'Clear routines and warning before changes',

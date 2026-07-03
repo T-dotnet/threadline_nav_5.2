@@ -17,7 +17,7 @@ import { Page } from "../types";
 import { cn } from "../lib/utils";
 import { motion } from "motion/react";
 import { useCurrentChild } from "../context/ChildContext";
-import { getChildSubheading } from "../lib/childStatus";
+import { isDiagnosticPathway } from "../lib/childStatus";
 
 interface SidebarProps {
   currentPage: Page;
@@ -29,8 +29,7 @@ export default function Sidebar({ currentPage, onPageChange, onShowPathway }: Si
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { currentChild } = useCurrentChild();
 
-  const isLeo = currentChild.name === "Leo" || currentChild.name === "Nick";
-  const isDiagnostic = getChildSubheading(currentChild) === "Diagnostic Assessment";
+  const isDiagnostic = isDiagnosticPathway(currentChild);
 
   const assessedNavItems = [
     { id: "home", label: "Home", icon: Home },

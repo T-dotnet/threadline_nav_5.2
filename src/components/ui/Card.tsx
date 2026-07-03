@@ -11,9 +11,10 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, animated = false, delay = 0, hoverable = false, ...props }, ref) => {
     const baseClasses = cn(
-      'bg-white rounded-2xl overflow-hidden relative',
-      hoverable && 'hover:-translate-y-0.5 transition-all duration-300',
-      className
+      'thread-card',
+      hoverable && 'thread-card--hoverable',
+      className,
+      'border-0 ring-0'
     );
 
     if (animated) {
@@ -35,21 +36,21 @@ Card.displayName = 'Card';
 
 export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pb-4 sm:p-7 sm:pb-5', className)} {...props} />
+    <div ref={ref} className={cn('thread-card__header', className)} {...props} />
   )
 );
 CardHeader.displayName = 'CardHeader';
 
 export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn('text-xl font-serif font-medium text-[var(--color-thread-heading)]', className)} {...props} />
+    <h3 ref={ref} className={cn('thread-card__title', className)} {...props} />
   )
 );
 CardTitle.displayName = 'CardTitle';
 
 export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pt-0 sm:p-7 sm:pt-0', className)} {...props} />
+    <div ref={ref} className={cn('thread-card__content', className)} {...props} />
   )
 );
 CardContent.displayName = 'CardContent';

@@ -34,12 +34,12 @@ export function ModalCloseButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-thread-off-white)] text-slate-500 transition-colors hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-thread-mid-green)]/30",
+        "thread-modal-close",
         className,
       )}
       aria-label={label}
     >
-      <X className={cn("h-4 w-4 stroke-[2]", iconClassName)} />
+      <X className={cn("thread-modal-close__icon", iconClassName)} />
     </button>
   );
 }
@@ -51,12 +51,12 @@ export function ModalShell({
   className,
   panelClassName,
   maxWidthClassName,
-  radiusClassName = "rounded-tr-[42px] rounded-bl-[42px]",
+  radiusClassName = "thread-modal-panel--scalloped",
   zIndexClassName = "z-[80]",
   isWatercolor = false,
   size = "large",
 }: ModalShellProps) {
-  const finalMaxWidth = maxWidthClassName || (size === "large" ? "max-w-4xl" : "max-w-2xl");
+  const finalMaxWidth = maxWidthClassName || (size === "large" ? "thread-modal-panel--large" : "thread-modal-panel--small");
 
   return (
     <AnimatePresence>
@@ -66,8 +66,8 @@ export function ModalShell({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={cn(
-            "fixed inset-0 flex items-center justify-center overflow-y-auto px-4 py-6 backdrop-blur-sm",
-            isWatercolor ? "bg-watercolor bg-fixed" : "bg-slate-950/35",
+            "thread-modal-overlay",
+            isWatercolor ? "thread-modal-overlay--watercolor" : "thread-modal-overlay--plain",
             zIndexClassName,
             className,
           )}
@@ -81,7 +81,7 @@ export function ModalShell({
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
             className={cn(
-              "relative my-auto w-full overflow-hidden border border-black/5 bg-white shadow-modal",
+              "thread-modal-panel",
               finalMaxWidth,
               radiusClassName,
               panelClassName,

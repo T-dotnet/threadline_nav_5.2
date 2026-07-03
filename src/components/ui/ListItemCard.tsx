@@ -15,18 +15,18 @@ export function ListItemCard({ children, className, active, ...props }: ListItem
     <motion.div 
       {...buttonPress}
       className={cn(
-        "flex-1 flex items-center justify-between rounded-full px-5 py-3 transition-all group min-h-[44px]",
-        active 
-          ? "bg-[#E6F4ED] text-[var(--color-thread-mid-green)]" 
-          : "bg-white text-[var(--color-thread-gray)] hover:bg-[var(--color-thread-off-white)] cursor-pointer",
+        "thread-list-item group",
+        active
+          ? "thread-list-item--active"
+          : "thread-list-item--idle",
         className
       )}
       {...(props as any)}
     >
-      <span className="text-[0.92rem] font-medium text-[var(--color-thread-dark-slate)]">{children}</span>
+      <span className="thread-list-item__label">{children}</span>
       <ChevronRight className={cn(
-        "w-4 h-4 stroke-[1.8] transition-colors",
-        active ? "text-[var(--color-thread-mid-green)]" : "text-slate-400 group-hover:text-[var(--color-thread-mid-green)]"
+        "thread-list-item__icon",
+        active ? "thread-list-item__icon--active" : "thread-list-item__icon--idle"
       )} />
     </motion.div>
   );

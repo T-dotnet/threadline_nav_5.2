@@ -48,7 +48,7 @@ const INITIAL_FILES: DocFile[] = [
     date: "12 Jun 2026",
     uploadedBy: "you",
     shared: true,
-    sharedWith: "Dr. Sarah Vance",
+    sharedWith: "Clinical reviewer",
     icon: Activity,
   },
   {

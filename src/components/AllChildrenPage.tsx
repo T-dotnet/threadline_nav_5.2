@@ -3,7 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { CalendarClock, ChevronLeft, ChevronRight, ClipboardList, LineChart, Users, ArrowRight } from "lucide-react";
 import { cn } from "../lib/utils";
-import { getChildSessionStatus, getChildSubheading, getSessionDate, isNewChildOnboardingComplete } from "../lib/childStatus";
+import {
+  getChildReviewDate,
+  getChildSessionStatus,
+  getChildSubheading,
+  getDiagnosticPathwayCardCopy,
+  getNewChildPrimaryActionLabel,
+  getSessionDate,
+  isAssessmentPendingProfile,
+  isDiagnosticPathway,
+  isMaintenancePhase,
+  isNewChildOnboardingComplete,
+  isPlanNotStarted,
+  shouldShowNewChildSetupAction,
+  shouldUseFirstSessionCard,
+} from "../lib/childStatus";
 import { Child, Page } from "../types";
 import { ProgressBar } from "./ui/ProgressBar";
 import { PageHeader } from "./ui/PageHeader";
@@ -46,12 +60,17 @@ export default function AllChildrenPage({
 
   // Helper to retrieve child-specific premium synthesis quote and progression details
   const getChildSynthesisData = (child: Child) => {
-    if (child.isNew && child.name !== "Leo" && child.name !== "Nick" && child.name !== "Noah" && child.name !== "Ava") {
-      const sessionStatus = getChildSessionStatus(child);
-      const sessionBooked = sessionStatus === "booked";
-      const sessionCancelled = sessionStatus === "cancelled";
-      const sessionDate = getSessionDate(child);
-      const sessionTime = sessionBooked ? child.intake?.sessionTime || "4:00 pm" : undefined;
+    const sessionStatus = getChildSessionStatus(child);
+    const sessionBooked = sessionStatus === "booked";
+    const sessionCancelled = sessionStatus === "cancelled";
+    const sessionDate = getSessionDate(child);
+    const sessionTime = sessionBooked ? child.intake?.sessionTime || "4:00 pm" : undefined;
+    const isDiagnostic = isDiagnosticPathway(child);
+    const isMaintenance = isMaintenancePhase(child);
+    const isStartingPlan = isPlanNotStarted(child);
+    const isAssessmentPending = isAssessmentPendingProfile(child);
+
+    if (child.isNew && !isDiagnostic && !isAssessmentPending) {
       return {
         quote: `We're gathering the full picture for ${child.name}. The assessment pages will open after the first session and clinical review.`,
         evidenceLevel: 1,
@@ -71,70 +90,65 @@ export default function AllChildrenPage({
       };
     }
 
+    if (isMaintenance) {
+      return {
+        quote: `${child.name} has achieved all current developmental milestones for this phase; focus now shifts to long-term enrichment and peer-leadership skills.`,
+        evidenceLevel: 3,
+        evidenceText: "Strong formulation",
+        progress: 100,
+        progressText: "all goals met — maintenance phase",
+        nextReview: getChildReviewDate(child),
+        accentColor: "text-[var(--color-thread-mid-green)]",
+        theme: "green",
+      };
+    }
+
+    if (isDiagnostic && isStartingPlan) {
+      return {
+        quote: `${child.name}'s first quarter plan is ready to begin. Progress is still 0%, so the next update should come from trying the first support routine.`,
+        evidenceLevel: 3,
+        evidenceText: "Baseline ready",
+        progress: 0,
+        progressText: "not started — first actions ready",
+        nextReview: "Not booked",
+        accentColor: "text-amber-600",
+        theme: "white",
+      };
+    }
+
+    if (isDiagnostic) {
+      return {
+        quote: sessionBooked
+          ? "The telehealth assessment session is booked. Completing the preparation details gives the clinician rich context."
+          : `${child.name} is registered for the Diagnostic Assessment pathway, but the assessment session has not been booked yet.`,
+        evidenceLevel: sessionBooked ? 1 : 2,
+        evidenceText: getChildSubheading(child),
+        progress: 0,
+        progressText: sessionBooked ? "booked — assessment pending" : "not booked — session pending",
+        nextReview: sessionDate || "Choose your path",
+        sessionDate,
+        sessionTime,
+        accentColor: "text-amber-600",
+        theme: "white",
+      };
+    }
+
+    if (isAssessmentPending) {
+      return {
+        quote: sessionBooked
+          ? `We're gathering the full picture for ${child.name}. The assessment pages will open after the first session and clinical review.`
+          : `${child.name} is registered for assessment, but the first session has not been booked yet.`,
+        evidenceLevel: sessionBooked ? 1 : 2,
+        evidenceText: getChildSubheading(child),
+        progress: 0,
+        progressText: sessionBooked ? "booked — assessment pending" : "not booked — session pending",
+        nextReview: sessionDate || "Choose your path",
+        accentColor: "text-amber-600",
+        theme: "white",
+      };
+    }
+
     switch (child.name) {
-      case "Liam":
-        return {
-          quote: "Liam has achieved all current developmental milestones for this phase; focus now shifts to long-term enrichment and peer-leadership skills.",
-          evidenceLevel: 3,
-          evidenceText: "Strong formulation",
-          progress: 100,
-          progressText: "all goals met — maintenance phase",
-          nextReview: "12 December",
-          accentColor: "text-[var(--color-thread-mid-green)]",
-          theme: "green",
-        };
-      case "Leo":
-        return {
-          quote: "Leo is registered for the Diagnostic Assessment pathway, but his assessment session has not been booked yet.",
-          evidenceLevel: 2,
-          evidenceText: "Diagnostic Assessment",
-          progress: 0,
-          progressText: "not booked — session pending",
-          nextReview: "Choose your path",
-          accentColor: "text-amber-600",
-          theme: "white",
-        };
-      case "Nick":
-        const nickSessionBooked = getChildSessionStatus(child) === "booked";
-        return {
-          quote: nickSessionBooked
-            ? "Your telehealth assessment session with Dr. Naomi Clark is booked. Completing the preparation details gives Dr. Clark rich context."
-            : "Nick is registered for the Diagnostic Assessment pathway, but his assessment session has not been booked yet.",
-          evidenceLevel: nickSessionBooked ? 1 : 2,
-          evidenceText: "Diagnostic Assessment",
-          progress: 0,
-          progressText: nickSessionBooked ? "booked — assessment pending" : "not booked — session pending",
-          nextReview: getSessionDate(child) || "Choose your path",
-          sessionDate: getSessionDate(child),
-          sessionTime: nickSessionBooked ? child.intake?.sessionTime || "4:00 pm" : undefined,
-          accentColor: "text-amber-600",
-          theme: "white",
-        };
-      case "Ava":
-        const avaSessionBooked = getChildSessionStatus(child) === "booked";
-        return {
-          quote: avaSessionBooked
-            ? `We're gathering the full picture for Ava. The assessment pages will open after the first session and clinical review.`
-            : "Ava is registered for the Diagnostic Assessment pathway, but her assessment session has not been booked yet.",
-          evidenceLevel: avaSessionBooked ? 1 : 2,
-          evidenceText: getChildSubheading(child),
-          progress: 0,
-          progressText: avaSessionBooked ? "booked — assessment pending" : "not booked — session pending",
-          nextReview: getSessionDate(child) || "Choose your path",
-          accentColor: "text-amber-600",
-          theme: "white",
-        };
-      case "Noah":
-        return {
-          quote: "Noah's first quarter plan is ready to begin. Progress is still 0%, so the next update should come from trying the first support routine.",
-          evidenceLevel: 3,
-          evidenceText: "Baseline ready",
-          progress: 0,
-          progressText: "not started — first actions ready",
-          nextReview: "Not booked",
-          accentColor: "text-amber-600",
-          theme: "white",
-        };
       case "Sophia":
         return {
           quote: "Sophia exhibits brilliant verbal reasoning and high peer sensitivity, but academic organization challenges necessitate visual scheduling aids.",
@@ -142,7 +156,7 @@ export default function AllChildrenPage({
           evidenceText: "Strong formulation",
           progress: 58,
           progressText: "good pacing — steady progress",
-          nextReview: "24 September",
+          nextReview: getChildReviewDate(child),
           accentColor: "text-[var(--color-thread-mid-green)]",
           theme: "white",
         };
@@ -154,7 +168,7 @@ export default function AllChildrenPage({
           evidenceText: "Strong formulation",
           progress: 65,
           progressText: "on track — steady progress",
-          nextReview: "12 September",
+          nextReview: getChildReviewDate(child),
           accentColor: "text-[var(--color-thread-mid-green)]",
           theme: "white",
         };
@@ -170,7 +184,7 @@ export default function AllChildrenPage({
     const sessionCancelled = sessionStatus === "cancelled";
     const ctaLabel = child.isNew
       ? hasMultipleChildren
-        ? (child.name === 'Tom' ? 'Start questionnaire' : `Open ${child.name} Insight`)
+        ? getNewChildPrimaryActionLabel(child)
         : `Manage ${child.name}'s Dashboard`
       : `Open ${child.name}`;
     const fallbackIcon = child.isNew
@@ -268,8 +282,8 @@ export default function AllChildrenPage({
                   <HeroActionCard
                     icon={<ArrowRight className="w-[22px] h-[22px] stroke-[1.8]" />}
                     title={activeSlide.ctaLabel}
-                    subtitle={(activeSlide.child.isNew && activeSlide.child.name !== "Leo" && activeSlide.child.name !== "Nick" && activeSlide.child.name !== "Noah" && activeSlide.child.name !== "Tom") ? "Start questionnaire" : "Open child view"}
-                    className="bg-[var(--color-thread-light-green)] text-[var(--color-thread-heading)] w-[190px] rounded-tl-[28px] hover:bg-[var(--color-thread-light-green)]/90"
+                    subtitle={activeSlide.child.isNew && getChildSubheading(activeSlide.child) === "Intake in progress" ? "Start questionnaire" : "Open child view"}
+                    className="bg-[var(--color-thread-light-green)] text-[var(--style-light-surface-text)] w-[190px] rounded-tl-[28px] hover:bg-[var(--color-thread-light-green)]/90"
                     onClick={() => handleFocusChild(activeSlide.child)}
                   />
                 ) : (
@@ -277,7 +291,7 @@ export default function AllChildrenPage({
                     icon={activeSlide.fallbackIcon}
                     title={activeSlide.fallbackTitle}
                     subtitle={activeSlide.fallbackSubtitle}
-                    className="bg-[var(--color-thread-light-green)] text-[var(--color-thread-heading)] w-[190px] rounded-tl-[28px]"
+                    className="bg-[var(--color-thread-light-green)] text-[var(--style-light-surface-text)] w-[190px] rounded-tl-[28px]"
                   />
                 )
               }
@@ -335,6 +349,8 @@ export default function AllChildrenPage({
           const sessionCancelled = sessionStatus === "cancelled";
           const sessionDate = getSessionDate(child);
           const sessionTime = sessionBooked ? child.intake?.sessionTime || "4:00 pm" : undefined;
+          const showFirstSessionCard = shouldUseFirstSessionCard(child);
+          const diagnosticCardCopy = getDiagnosticPathwayCardCopy(child);
 
           return (
             <motion.section
@@ -399,7 +415,7 @@ export default function AllChildrenPage({
                         >
                           Open Insight
                         </Button>
-                      ) : (child.name === "Leo" || child.name === "Nick" || child.name === "Noah") ? null : (
+                      ) : !shouldShowNewChildSetupAction(child) ? null : (
                         <Button
                           onClick={() => {
                             setChild(child);
@@ -408,7 +424,7 @@ export default function AllChildrenPage({
                           variant="mint"
                           rightIcon={<ChevronRight className="w-3.5 h-3.5 stroke-[2]" />}
                         >
-                          {child.name === 'Tom' ? 'Start questionnaire' : 'Open Insight'}
+                          {getNewChildPrimaryActionLabel(child)}
                         </Button>
                       )
                     ) : (
@@ -431,19 +447,19 @@ export default function AllChildrenPage({
                   className="h-auto md:h-[300px]"
                   id={`plan-card-${child.name.toLowerCase()}`}
                 >
-                  {child.isNew || child.name === "Leo" || child.name === "Nick" ? (
+                  {showFirstSessionCard ? (
                       <FirstSessionCard
                         date={sessionDate}
                         time={sessionTime}
                         className="h-full"
-                        isBooked={(child.name === "Leo") ? false : sessionBooked}
-                        isCancelled={(child.name === "Leo") ? false : sessionCancelled}
-                        titleText={(child.name === "Leo" || child.name === "Nick") ? "Diagnostic Assessment" : undefined}
-                        descriptionText={(child.name === "Leo") ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet." : undefined}
-                        buttonText={(child.name === "Leo") ? "Book appointment" : undefined}
+                        isBooked={sessionBooked}
+                        isCancelled={sessionCancelled}
+                        titleText={diagnosticCardCopy.titleText}
+                        descriptionText={diagnosticCardCopy.descriptionText}
+                        buttonText={diagnosticCardCopy.buttonText}
                         onBook={() => {
                           setChild(child);
-                          if (child.name === "Leo" || child.name === "Nick") {
+                          if (isDiagnosticPathway(child)) {
                             navigate('/setup?step=5&directSession=1');
                           } else {
                             onShowPathway?.(child);
@@ -463,7 +479,7 @@ export default function AllChildrenPage({
                         setChild(child);
                         navigate('/setup?step=5&directSession=1');
                       }}
-                      rescheduleLabel={child.name === "Noah" ? "Book now" : undefined}
+                      rescheduleLabel={isPlanNotStarted(child) ? "Book now" : undefined}
                       className="rounded-bl-[32px] h-full"
                     />
                   )}

@@ -18,14 +18,14 @@ export const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
     return (
       <div className={className} {...props}>
         {showLabel && (
-          <div className="flex justify-between items-center mb-1.5 text-xs font-medium text-[var(--color-thread-gray)]">
+          <div className="thread-progress__meta">
             <span>Progress</span>
             <span>{Math.round(percentage)}%</span>
           </div>
         )}
-        <div ref={ref} className={cn('w-full rounded-full overflow-hidden', isSecondary ? 'bg-[var(--hero-secondary-track)]' : 'bg-slate-100', heightClass)}>
+        <div ref={ref} className={cn('thread-progress__track', isSecondary ? 'thread-progress__track--secondary' : 'thread-progress__track--primary', heightClass)}>
           <motion.div 
-            className={cn('h-full rounded-full', colorClass)}
+            className={cn('thread-progress__fill', colorClass)}
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}

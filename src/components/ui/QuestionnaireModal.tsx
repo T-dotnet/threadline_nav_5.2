@@ -4,7 +4,7 @@ import { Check, ChevronRight, X, ArrowLeft, ArrowUp, ArrowDown } from 'lucide-re
 import { cn } from '../../lib/utils';
 import { QUESTIONS } from '../../questionnaire';
 import { getAnswerCue, getAnswersAfterOptionSelect, getConversationLead } from '../../lib/questionnaireFlow';
-import watercolorBg from '../../assets/images/optimized/watercolor-bg-900.jpg';
+import { ProgressBar } from './ProgressBar';
 
 interface QuestionnaireModalProps {
   isOpen: boolean;
@@ -130,16 +130,15 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10"
-        style={{ backgroundImage: `url(${watercolorBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        className="thread-questionnaire-modal"
       >
-        <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]" />
+        <div className="thread-questionnaire-modal__scrim" />
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.97 }}
           transition={{ duration: 0.3 }}
-          className="relative z-10 w-full max-w-2xl bg-white rounded-3xl shadow-[0_32px_80px_-12px_rgba(0,0,0,0.18)] border border-black/5 flex flex-col max-h-[90vh] overflow-hidden"
+          className="thread-questionnaire-modal__panel"
         >
           <div className="flex flex-col h-full justify-between min-h-[480px]">
             {/* Header */}
@@ -164,7 +163,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                     ? answer.join(', ')
                     : answer || <span className="text-rose-500 italic font-normal">Not answered</span>;
                   return (
-                    <div key={q.id} className="rounded-[28px] border border-black/5 bg-slate-50 p-5">
+                    <div key={q.id} className="rounded-[28px] bg-slate-50 p-5">
                       <div className="text-[0.72rem] uppercase tracking-[0.18em] text-slate-400 mb-2">Question {idx + 1}</div>
                       <div className="font-medium text-[1rem] text-[var(--color-thread-heading)] leading-snug mb-3">
                         {q.text.replace(/\$\{childName\}/g, childName || 'your child')}
@@ -196,7 +195,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                       return (
                         <div className="space-y-6">
                           <div className="space-y-3">
-                            <div className="inline-flex rounded-tr-[18px] rounded-bl-[18px] bg-[var(--color-thread-light-green)]/70 px-4 py-2 text-[0.86rem] font-medium text-[var(--color-thread-heading)]">
+                            <div className="inline-flex rounded-tr-[18px] rounded-bl-[18px] bg-[var(--color-thread-light-green)]/70 px-4 py-2 text-[0.86rem] font-medium text-[var(--style-light-surface-text)]">
                               {getConversationLead(section || '', activeQuestionIndex)}
                             </div>
                             <div className="flex items-start gap-3">
@@ -224,7 +223,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                                       className={cn(
                                         "w-full p-4 rounded-xl border text-left flex items-center justify-between group transition-all duration-200 cursor-pointer shadow-none",
                                         isSelected
-                                          ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)] text-[var(--color-thread-heading)] font-semibold"
+                                          ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)] text-[var(--style-light-surface-text)] font-semibold"
                                           : "bg-white border-black/10 text-slate-700 hover:border-black/20 hover:bg-slate-50/50"
                                       )}
                                     >
@@ -257,7 +256,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                                       className={cn(
                                         "w-full p-4 rounded-xl border text-left flex items-center justify-between group transition-all duration-200 cursor-pointer shadow-none",
                                         isSelected
-                                          ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)] text-[var(--color-thread-heading)] font-semibold"
+                                          ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)] text-[var(--style-light-surface-text)] font-semibold"
                                           : "bg-white border-black/10 text-slate-700 hover:border-black/20 hover:bg-slate-50/50"
                                       )}
                                     >
@@ -300,7 +299,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                                   onChange={(e) => handleTextChange(q.id, e.target.value)}
                                   placeholder={q.placeholder || "Type your answer here..."}
                                   rows={3}
-                                  className="w-full bg-white border border-black/15 rounded-2xl p-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-thread-mid-green)]/20 focus:border-[var(--color-thread-mid-green)] transition-all font-sans text-base resize-none"
+                                  className="thread-textarea thread-textarea--white thread-textarea--compact rounded-2xl"
                                 />
                                 <div className="flex items-center gap-3">
                                   <button
@@ -342,7 +341,7 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                           <button
                             key={q.id}
                             onClick={() => { setActiveQuestionIndex(idx); setIsReviewing(false); }}
-                            className="w-full text-left p-3.5 rounded-xl border border-black/5 hover:border-[var(--color-thread-mid-green)] hover:bg-slate-50/50 transition-all flex justify-between items-start gap-4 cursor-pointer group"
+                            className="w-full text-left p-3.5 rounded-xl border-0 hover:bg-slate-50/50 transition-all flex justify-between items-start gap-4 cursor-pointer group"
                           >
                             <div className="space-y-1.5">
                               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-[var(--color-thread-mid-green)] transition-colors">Question {idx + 1}</div>
@@ -381,12 +380,11 @@ export function QuestionnaireModal({ isOpen, section, answers: initialAnswers, c
                   {!isReviewing ? `${activeQuestionIndex + 1} of ${currentQuestions.length}` : 'Review screen'}
                 </span>
                 {!isReviewing && (
-                  <div className="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[var(--color-thread-mid-green)] transition-all duration-300"
-                      style={{ width: `${((activeQuestionIndex + 1) / currentQuestions.length) * 100}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    className="thread-questionnaire-modal__progress"
+                    value={activeQuestionIndex + 1}
+                    max={currentQuestions.length}
+                  />
                 )}
               </div>
               <div className="flex items-center gap-2">

@@ -73,7 +73,7 @@ export function DiaryEntryForm({
               id="diary-entry-child"
               value={selectedChildId}
               onChange={(event) => onSelectedChildChange(event.target.value)}
-              className="w-full bg-[var(--color-thread-off-white)]/50 border border-black/10 rounded-tr-[20px] px-4 py-3 text-[var(--color-thread-dark-slate)] focus:outline-none focus:ring-2 focus:ring-[var(--color-thread-mid-green)]/20 focus:border-[var(--color-thread-mid-green)]/30 transition-all font-sans text-[0.95rem]"
+              className="thread-select"
             >
               {childOptions.map((child) => (
                 <option key={child.id} value={child.id}>
@@ -93,7 +93,7 @@ export function DiaryEntryForm({
             onChange={(event) => onNoteChange(event.target.value)}
             placeholder={`What happened today for ${childName}?`}
             rows={5}
-            className="w-full bg-[var(--color-thread-off-white)]/50 border border-black/10 rounded-tr-[28px] p-4 text-[var(--color-thread-dark-slate)] placeholder:text-[var(--color-thread-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-thread-mid-green)]/20 focus:border-[var(--color-thread-mid-green)]/30 transition-all font-sans text-[0.95rem] resize-y min-h-[148px]"
+            className="thread-textarea thread-textarea--soft thread-textarea--diary"
           />
         </div>
 

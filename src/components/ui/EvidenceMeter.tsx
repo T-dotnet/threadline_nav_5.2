@@ -25,14 +25,14 @@ export const EvidenceMeter = React.forwardRef<HTMLDivElement, EvidenceMeterProps
     return (
       <div
         ref={ref}
-        className={cn('inline-flex gap-1.25 items-center', className)}
+        className={cn('thread-evidence-meter', className)}
         {...props}
       >
         {[1, 2, 3].map((l) => (
           <i
             key={l}
             className={cn(
-              'w-1.5 h-1.5 rounded-full transition-all',
+              'thread-evidence-meter__dot',
               getCircleClasses(l)
             )}
           />

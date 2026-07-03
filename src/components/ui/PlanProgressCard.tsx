@@ -49,7 +49,8 @@ export function PlanProgressCard({
     <div
       className={cn(
         "bg-[var(--hero-secondary-bg)] text-[var(--hero-secondary-text)] rounded-bl-[32px] p-7.5 flex flex-col h-full",
-        className
+        className,
+        "border-0"
       )}
     >
       <span className="text-[0.68rem] tracking-[0.12em] uppercase opacity-75 font-medium mb-5 block flex-shrink-0">

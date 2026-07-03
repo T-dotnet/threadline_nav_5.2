@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { Page } from './types';
 import DashboardLayout from './components/DashboardLayout';
 import ScrollToTop from './components/ScrollToTop';
-import { ReflectionDeck, type ReflectionDeckData } from './components/ui/ReflectionDeck';
+import type { ReflectionDeckData } from './components/ui/ReflectionDeck';
 import { ModalCloseButton, ModalShell } from './components/ui/ModalShell';
 
 import { ChildProvider } from './context/ChildContext';
@@ -17,6 +17,11 @@ import { useCurrentChild } from './context/ChildContext';
 import { DisplayModeProvider } from './context/DisplayModeContext';
 import { SecondaryUsersProvider } from './context/SecondaryUsersContext';
 import { getChildSubheading } from './lib/childStatus';
+import {
+  applyThreadlineVisualStyle,
+  getStoredThreadlineVisualStyle,
+  THREADLINE_STYLE_STORAGE_KEY,
+} from './lib/visualStyles';
 
 const AddChildFlow = lazy(() => import('./components/AddChildFlow'));
 const AllChildrenPage = lazy(() => import('./components/AllChildrenPage'));
@@ -28,6 +33,7 @@ const HomePage = lazy(() => import('./components/HomePage'));
 const NewChildPreviewPage = lazy(() => import('./components/NewChildPreviewPage'));
 const PrioritiesPage = lazy(() => import('./components/PrioritiesPage'));
 const ResourcesPage = lazy(() => import('./components/ResourcesPage'));
+const ReflectionDeck = lazy(() => import('./components/ui/ReflectionDeck').then((module) => ({ default: module.ReflectionDeck })));
 const ReviewsPage = lazy(() => import('./components/ReviewsPage'));
 const SettingsPage = lazy(() => import('./components/SettingsPage'));
 const StyleGuidePage = lazy(() => import('./components/StyleGuidePage'));
@@ -53,6 +59,7 @@ function resetStoredStateIfRequested() {
     'threadline-demo-data-version',
     'thread-theme',
     'thread-font',
+    THREADLINE_STYLE_STORAGE_KEY,
     'thread-hero-style',
     'thread-secondary-style',
   ].forEach((key) => {
@@ -79,26 +86,9 @@ function AppContent() {
 
   const currentPage = getCurrentPage();
 
-  // Initialize themes safely from localStorage or fallback
+  // Initialize visual style safely from localStorage or fallback
   useEffect(() => {
-    let savedTheme = 'energetic';
-    let savedFont = 'modern-serif';
-    let savedHeroStyle = 'white';
-    let savedSecondaryStyle = 'light';
-    
-    try {
-      savedTheme = localStorage.getItem('thread-theme') || 'energetic';
-      savedFont = localStorage.getItem('thread-font') || 'modern-serif';
-      savedHeroStyle = localStorage.getItem('thread-hero-style') || 'white';
-      savedSecondaryStyle = localStorage.getItem('thread-secondary-style') || 'light';
-    } catch (e) {
-      console.warn("Storage access is blocked or restricted:", e);
-    }
-
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    document.documentElement.setAttribute('data-font', savedFont);
-    document.documentElement.setAttribute('data-hero-style', savedHeroStyle);
-    document.documentElement.setAttribute('data-hero-secondary', savedSecondaryStyle);
+    applyThreadlineVisualStyle(getStoredThreadlineVisualStyle(), { persist: false });
   }, []);
 
   const [isSetupOpen, setIsSetupOpen] = useState(false);

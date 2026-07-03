@@ -4,7 +4,15 @@ import { Page } from "../types";
 import { useCurrentChild } from "../context/ChildContext";
 import { QUESTIONNAIRE_SECTIONS, getCompletedQuestionnaireSections } from "../questionnaire";
 import { getJourneyHomeCopy, hasReportContext } from "../lib/journeyCopy";
-import { getChildSessionStatus, getSessionDate, isNewChildOnboardingComplete } from "../lib/childStatus";
+import {
+  getChildSessionStatus,
+  getDiagnosticPathwayCardCopy,
+  getSessionDate,
+  isAssessmentPendingProfile,
+  isDiagnosticPathway,
+  isIntakeProfile,
+  isNewChildOnboardingComplete,
+} from "../lib/childStatus";
 import { PageContainer } from "./ui/PageContainer";
 import { PageHeader } from "./ui/PageHeader";
 import { FadeInScroll } from "./ui/FadeInScroll";
@@ -21,7 +29,10 @@ import { PageFooterCTA } from "./ui/PageFooterCTA";
 import { FirstSessionCard } from "./ui/FirstSessionCard";
 import { ActionLink } from "./ui/ActionLink";
 import { ValueCard } from "./ui/ValueCard";
-import pediatricianImg from "../assets/images/clinical_report_placeholder_1783000795444.jpg";
+import pediatricianQuestionsImg from "../assets/images/optimized/pediatrician-questions-900.jpg";
+import greenPlumBedtimeImg from "../assets/images/optimized/green-plum-bedtime-routine-900.jpg";
+import greenPlumClassroomImg from "../assets/images/optimized/green-plum-classroom-support-900.jpg";
+import greenPlumBreathingImg from "../assets/images/optimized/green-plum-breathing-rhythm-900.jpg";
 
 interface NewChildPreviewPageProps {
   onPageChange: (page: Page) => void;
@@ -73,6 +84,12 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
   const firstSessionTime = isSessionBooked ? currentChild.intake?.sessionTime || "4:00 pm" : undefined;
   const reportContext = hasReportContext(currentChild.intake?.availableInfo);
   const homeCopy = getJourneyHomeCopy(currentChild.name, currentChild.intake?.journeyStage, reportContext);
+  const isDiagnostic = isDiagnosticPathway(currentChild);
+  const isProfileAssessmentPending = isAssessmentPendingProfile(currentChild);
+  const isProfileIntakeOnly = isIntakeProfile(currentChild);
+  const shouldShowPreparationGuides = !isProfileIntakeOnly && !isProfileAssessmentPending && !(isDiagnostic && !isSessionBooked);
+  const diagnosticCardCopy = getDiagnosticPathwayCardCopy(currentChild);
+  const diagnosticDescription = diagnosticCardCopy.descriptionText || "Your assessment session is booked. Complete the preparation details so the clinician has the right context.";
 
   return (
     <motion.div
@@ -89,9 +106,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
           className="mb-12"
           description={
             <SectionDescription>
-              {(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") 
-                ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet." 
-                : homeCopy.description}
+              {isDiagnostic ? diagnosticDescription : homeCopy.description}
             </SectionDescription>
           }
         />
@@ -104,7 +119,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
             evidenceText={isAssessmentPending ? "Setup completed" : undefined}
             className="h-full"
             action={
-              (isAssessmentPending || currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? undefined : (
+              (isAssessmentPending || isDiagnostic) ? undefined : (
                 <Button
                   variant="mint"
                   onClick={() => onOpenSetup?.()}
@@ -121,10 +136,10 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
             time={firstSessionTime}
             isBooked={isSessionBooked}
             isCancelled={isSessionCancelled}
-            titleText={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? "Diagnostic Assessment" : undefined}
-            descriptionText={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet." : undefined}
-            buttonText={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? (currentChild.name === "Nick" ? "Prepare for your session" : "Book appointment") : undefined}
-            onBook={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? () => onOpenSetup?.(5) : (onShowPathway ? () => onShowPathway(currentChild) : () => onOpenSetup?.(5))}
+            titleText={diagnosticCardCopy.titleText}
+            descriptionText={diagnosticCardCopy.descriptionText}
+            buttonText={diagnosticCardCopy.buttonText}
+            onBook={isDiagnostic ? () => onOpenSetup?.(5) : (onShowPathway ? () => onShowPathway(currentChild) : () => onOpenSetup?.(5))}
             onReschedule={isSessionBooked ? () => onOpenSetup?.(5) : undefined}
           />
         </div>
@@ -171,7 +186,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
           </div>
         </FadeInScroll>
 
-        {currentChild.name !== "Leo" && currentChild.name !== "Nick" && currentChild.name !== "Noah" && (
+        {!isDiagnostic && (
           <FadeInScroll className="mb-24">
             <div>
               <SectionTitle>{homeCopy.timelineTitle}</SectionTitle>
@@ -247,7 +262,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
           />
         </FadeInScroll>
 
-        {currentChild.name !== "Tom" && currentChild.name !== "Ava" && currentChild.name !== "Leo" && (
+        {shouldShowPreparationGuides && (
           <FadeInScroll className="mb-16">
             <div>
               <SectionLabel>Helpful preparation</SectionLabel>
@@ -264,6 +279,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="Questions to bring to the call"
                     description="Keep a short list of what you want the clinician to understand first."
                     readTime="5 min"
+                    image={greenPlumBreathingImg}
                     cornerClass="rounded-tr-[32px]"
                   />
                   <GuideCard
@@ -271,6 +287,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="Two things to notice"
                     description="What feels hardest right now, and when does the day feel easiest?"
                     readTime="3 min"
+                    image={greenPlumBedtimeImg}
                     cornerClass="rounded-tl-[32px]"
                   />
                   <GuideCard
@@ -278,6 +295,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="What to notice this week"
                     description="Look for patterns around routines, transitions, sleep, school, and friendships."
                     readTime="6 min"
+                    image={greenPlumClassroomImg}
                     cornerClass="rounded-bl-[32px]"
                   />
                 </>
@@ -289,6 +307,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="Questions to bring to the call"
                     description="Keep a short list of what support would help most after diagnosis."
                     readTime="5 min"
+                    image={greenPlumBreathingImg}
                     cornerClass="rounded-tr-[32px]"
                   />
                   <GuideCard
@@ -296,6 +315,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="What support already exists"
                     description="Plans, reports, school adjustments, and strategies already tried can help shape next steps."
                     readTime="4 min"
+                    image={pediatricianQuestionsImg}
                     cornerClass="rounded-tl-[32px]"
                   />
                   <GuideCard
@@ -303,6 +323,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="What to notice this week"
                     description="Look for patterns around routines, transitions, sleep, school, and friendships."
                     readTime="6 min"
+                    image={greenPlumClassroomImg}
                     cornerClass="rounded-bl-[32px]"
                   />
                 </>
@@ -314,6 +335,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="Questions to bring to the call"
                     description="Keep a list of existing reports and observations that can make the assessment more useful."
                     readTime="5 min"
+                    image={pediatricianQuestionsImg}
                     cornerClass="rounded-tr-[32px]"
                   />
                   <GuideCard
@@ -321,6 +343,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="What to gather before assessment"
                     description="Collect reports, teacher notes, and recent observations so the session starts with the right context."
                     readTime="4 min"
+                    image={greenPlumBedtimeImg}
                     cornerClass="rounded-tl-[32px]"
                   />
                   <GuideCard
@@ -328,6 +351,7 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
                     title="What to notice this week"
                     description="Look for patterns around routines, transitions, sleep, school, and friendships."
                     readTime="6 min"
+                    image={greenPlumClassroomImg}
                     cornerClass="rounded-bl-[32px]"
                   />
                 </>
@@ -337,12 +361,12 @@ export default function NewChildPreviewPage({ onPageChange, onOpenSetup, onShowP
         )}
       </PageContainer>
 
-      {currentChild.name !== "Ava" && (
+      {!isProfileAssessmentPending && (
         <PageFooterCTA
-          title={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? "Ready to explore the assessment pathway?" : homeCopy.footerTitle}
-          buttonText={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? "Explore Assessment preview" : homeCopy.footerButton}
+          title={isDiagnostic ? "Ready to explore the assessment pathway?" : homeCopy.footerTitle}
+          buttonText={isDiagnostic ? "Explore Assessment preview" : homeCopy.footerButton}
           buttonIcon={<ArrowRight className="w-4 h-4 stroke-[2]" />}
-          onClick={(currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? () => onPageChange("assessment") : () => onOpenSetup?.()}
+          onClick={isDiagnostic ? () => onPageChange("assessment") : () => onOpenSetup?.()}
         />
       )}
     </motion.div>

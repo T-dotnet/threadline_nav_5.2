@@ -16,10 +16,10 @@ export const FilterTab = React.forwardRef<HTMLButtonElement, FilterTabProps>(
         {...buttonPress}
         onClick={onClick}
         className={cn(
-          "px-5 py-2.5 rounded-full text-[0.84rem] font-medium transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 min-h-[44px]",
+          "thread-filter-tab",
           active
-            ? "bg-[#E6F4ED] text-[var(--color-thread-mid-green)]"
-            : "bg-white text-[var(--color-thread-gray)] hover:text-[var(--color-thread-dark-slate)]",
+            ? "thread-filter-tab--active"
+            : "thread-filter-tab--inactive",
           className
         )}
         {...props}

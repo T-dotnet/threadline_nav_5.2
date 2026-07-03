@@ -15,64 +15,64 @@ interface SetupStepperProps {
 
 export function SetupStepper({ activeStep, heading }: SetupStepperProps) {
   const currentStep = SETUP_STEPS.find((step) => step.num === activeStep) ?? SETUP_STEPS[0];
-  const progressPercent = ((activeStep - 1) / (SETUP_STEPS.length - 1)) * 100;
+  const mobileProgressClass =
+    activeStep <= 1 ? "w-0" : activeStep === 2 ? "w-1/3" : activeStep === 3 ? "w-2/3" : "w-full";
 
   return (
-    <div className="w-full">
-      <div className="flex items-start justify-between gap-4 md:block">
-        <div className="text-[0.72rem] tracking-[0.1em] uppercase text-[var(--color-thread-mid-green)] font-medium md:mb-8">
+    <div className="thread-setup-stepper">
+      <div className="thread-setup-stepper__heading-row">
+        <div className="thread-setup-stepper__heading">
           {heading}
         </div>
-        <div className="md:hidden text-[0.72rem] font-medium text-slate-400 whitespace-nowrap">
+        <div className="thread-setup-stepper__counter">
           Step {activeStep} of {SETUP_STEPS.length}
         </div>
       </div>
 
-      <div className="md:hidden mt-4 rounded-tr-[24px] bg-[var(--color-thread-off-white)]/70 p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-full bg-[var(--color-thread-light-green)] text-[var(--color-thread-mid-green)] flex items-center justify-center text-sm font-medium flex-shrink-0">
+      <div className="thread-setup-stepper__mobile-card">
+        <div className="thread-setup-stepper__mobile-summary">
+          <div className="thread-setup-stepper__mobile-number">
             {activeStep}
           </div>
-          <div className="min-w-0">
-            <div className="text-[0.98rem] font-medium text-[var(--color-thread-heading)] leading-tight">
+          <div className="thread-setup-stepper__mobile-copy">
+            <div className="thread-setup-stepper__mobile-title">
               {currentStep.title}
             </div>
-            <div className="text-[0.8rem] text-slate-500 leading-snug mt-1">
+            <div className="thread-setup-stepper__mobile-desc">
               {currentStep.desc}
             </div>
           </div>
         </div>
 
-        <div className="relative mt-5 px-1">
-          <div className="absolute left-4 right-4 top-3 h-0.5 bg-black/10" />
+        <div className="thread-setup-stepper__mobile-progress">
+          <div className="thread-setup-stepper__mobile-track" />
           <div
-            className="absolute left-4 top-3 h-0.5 bg-[var(--color-thread-mid-green)] transition-all duration-500"
-            style={{ width: `calc((100% - 2rem) * ${progressPercent / 100})` }}
+            className={cn("thread-setup-stepper__mobile-fill", mobileProgressClass)}
           />
-          <div className="relative z-10 grid gap-1" style={{ gridTemplateColumns: `repeat(${SETUP_STEPS.length}, minmax(0, 1fr))` }}>
+          <div className="thread-setup-stepper__mobile-grid">
             {SETUP_STEPS.map((step) => {
               const isPast = activeStep > step.num;
               const isCurrent = activeStep === step.num;
 
               return (
-                <div key={step.num} className="flex flex-col items-center gap-2">
+                <div key={step.num} className="thread-setup-stepper__mobile-item">
                   <div
                     className={cn(
-                      "w-6 h-6 rounded-full flex items-center justify-center text-[0.68rem] font-medium border-2 bg-white transition-colors",
+                      "thread-setup-stepper__dot thread-setup-stepper__dot--mobile",
                       isPast
-                        ? "bg-[var(--color-thread-mid-green)] border-[var(--color-thread-mid-green)] text-white"
+                        ? "thread-setup-stepper__dot--complete"
                         : isCurrent
-                        ? "border-[var(--color-thread-mid-green)] text-[var(--color-thread-mid-green)] shadow-[0_0_0_4px_var(--color-thread-light-green)]"
-                        : "border-slate-200 text-slate-400",
+                        ? "thread-setup-stepper__dot--current"
+                        : "thread-setup-stepper__dot--upcoming",
                     )}
                     aria-label={`${step.title}: ${isPast ? "complete" : isCurrent ? "current" : "up next"}`}
                   >
-                    {isPast ? <Check className="w-3.5 h-3.5" /> : step.num}
+                    {isPast ? <Check className="thread-setup-stepper__check" /> : step.num}
                   </div>
                   <span
                     className={cn(
-                      "text-[0.64rem] leading-tight text-center",
-                      isCurrent || isPast ? "text-[var(--color-thread-heading)]" : "text-slate-400",
+                      "thread-setup-stepper__mobile-label",
+                      isCurrent || isPast ? "thread-setup-stepper__label--available" : "thread-setup-stepper__label--upcoming",
                     )}
                   >
                     {step.title}
@@ -84,37 +84,37 @@ export function SetupStepper({ activeStep, heading }: SetupStepperProps) {
         </div>
       </div>
 
-      <div className="hidden md:block space-y-6 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-black/5">
+      <div className="thread-setup-stepper__desktop-list">
         {SETUP_STEPS.map((step) => {
           const isPast = activeStep > step.num;
           const isCurrent = activeStep === step.num;
           return (
-            <div key={step.num} className="flex gap-4 relative z-10">
+            <div key={step.num} className="thread-setup-stepper__desktop-item">
               <div
                 className={cn(
-                  "w-7 h-7 rounded-full flex items-center justify-center text-[0.72rem] font-medium border-2 transition-colors bg-[var(--color-thread-off-white)]",
+                  "thread-setup-stepper__dot thread-setup-stepper__dot--desktop",
                   isPast
-                    ? "bg-[var(--color-thread-mid-green)] border-[var(--color-thread-mid-green)] text-white"
+                    ? "thread-setup-stepper__dot--complete"
                     : isCurrent
-                    ? "border-[var(--color-thread-mid-green)] text-[var(--color-thread-mid-green)] bg-[var(--color-thread-light-green)] shadow-[0_0_0_4px_var(--color-thread-light-green)]"
-                    : "border-slate-200 text-slate-400 bg-white",
+                    ? "thread-setup-stepper__dot--current thread-setup-stepper__dot--current-desktop"
+                    : "thread-setup-stepper__dot--upcoming",
                 )}
               >
-                {isPast ? <Check className="w-3.5 h-3.5" /> : step.num}
+                {isPast ? <Check className="thread-setup-stepper__check" /> : step.num}
               </div>
               <div>
                 <div
                   className={cn(
-                    "text-[0.92rem] font-medium mb-0.5 transition-colors",
-                    isCurrent || isPast ? "text-[var(--color-thread-heading)]" : "text-slate-400",
+                    "thread-setup-stepper__desktop-title",
+                    isCurrent || isPast ? "thread-setup-stepper__label--available" : "thread-setup-stepper__label--upcoming",
                   )}
                 >
                   {step.title}
                 </div>
                 <div
                   className={cn(
-                    "text-[0.78rem] transition-colors",
-                    isCurrent ? "text-slate-500" : "text-slate-400",
+                    "thread-setup-stepper__desktop-desc",
+                    isCurrent ? "thread-setup-stepper__desc--current" : "thread-setup-stepper__label--upcoming",
                   )}
                 >
                   {step.desc}

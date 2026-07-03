@@ -121,8 +121,8 @@ export default function UnderstandingPage({
   const { isParentClarity } = useDisplayMode();
   const [activeQuestionnaireSection, setActiveQuestionnaireSection] = useState<string | null>(null);
   const data = getChildData(currentChild).understanding;
-  const isNoahStarting = isPlanNotStarted(currentChild);
-  const showParentClarity = isParentClarity && !currentChild.isNew && !isMaintenancePhase(currentChild) && !isNoahStarting;
+  const isStartingPlan = isPlanNotStarted(currentChild);
+  const showParentClarity = isParentClarity && !currentChild.isNew && !isMaintenancePhase(currentChild) && !isStartingPlan;
   const answers = currentChild.intake?.questionnaireAnswers || {};
   const completedSections = (currentChild.intake?.completedQuestionnaireSections || getCompletedQuestionnaireSections(answers)).map(normalizeQuestionnaireSectionName);
   const completedCount = completedSections.length;
@@ -453,27 +453,27 @@ export default function UnderstandingPage({
 
         <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1 mt-8">
           <GuideCard
-            category={isNoahStarting ? "Settled Strength" : "High Competency"}
-            title={isNoahStarting ? "Pattern spotting" : "Creative Play"}
-            description={isNoahStarting ? "Noah notices routines, details and changes quickly. This can become a useful anchor when the first support plan starts." : "Displays rich imaginative flow, abstract play and artistic task retention. A real strength to integrate into curriculum pathways."}
+            category={isStartingPlan ? "Settled Strength" : "High Competency"}
+            title={isStartingPlan ? "Pattern spotting" : "Creative Play"}
+            description={isStartingPlan ? "Noah notices routines, details and changes quickly. This can become a useful anchor when the first support plan starts." : "Displays rich imaginative flow, abstract play and artistic task retention. A real strength to integrate into curriculum pathways."}
             readTime=""
             image={creativePlayImg}
             cornerClass="rounded-tr-[32px]"
             actionText="Explore strength"
           />
           <GuideCard
-            category={isNoahStarting ? "Good Foundation" : "Exceptional Grasp"}
-            title={isNoahStarting ? "Clear one-to-one learning" : "Verbal Comprehension"}
-            description={isNoahStarting ? "Noah responds well when instructions are calm, direct and given one step at a time. That gives the starter plan something practical to build on." : "Excellent grasp of spoken guidelines and a highly adaptive communicative scope. Enthusiastic sharing is seen daily."}
+            category={isStartingPlan ? "Good Foundation" : "Exceptional Grasp"}
+            title={isStartingPlan ? "Clear one-to-one learning" : "Verbal Comprehension"}
+            description={isStartingPlan ? "Noah responds well when instructions are calm, direct and given one step at a time. That gives the starter plan something practical to build on." : "Excellent grasp of spoken guidelines and a highly adaptive communicative scope. Enthusiastic sharing is seen daily."}
             readTime=""
             image={img2947}
             cornerClass="rounded-tl-[32px]"
             actionText="Explore strength"
           />
           <GuideCard
-            category={isNoahStarting ? "Protective Factor" : "Active Skillset"}
-            title={isNoahStarting ? "Warm adult connection" : "Social Empathy"}
-            description={isNoahStarting ? "Noah accepts support best when the adult relationship feels predictable. Keeping that connection steady should help the first routine land." : "Deep sensitivity to family members and primary playground buddies. Welcomes constructive social feedback loop cues."}
+            category={isStartingPlan ? "Protective Factor" : "Active Skillset"}
+            title={isStartingPlan ? "Warm adult connection" : "Social Empathy"}
+            description={isStartingPlan ? "Noah accepts support best when the adult relationship feels predictable. Keeping that connection steady should help the first routine land." : "Deep sensitivity to family members and primary playground buddies. Welcomes constructive social feedback loop cues."}
             readTime=""
             image={img2912}
             cornerClass="rounded-bl-[32px]"

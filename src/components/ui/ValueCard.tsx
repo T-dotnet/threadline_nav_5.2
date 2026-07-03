@@ -14,23 +14,28 @@ export const ValueCard = React.forwardRef<HTMLDivElement, ValueCardProps>(
     const isMint = variant === 'mint';
     const isWhite = variant === 'white';
     const isSolid = solid && variant === 'default';
+    const toneClassName = isSolid
+      ? "thread-value-card--solid"
+      : isMint
+      ? "thread-value-card--mint"
+      : isWhite
+      ? "thread-value-card--white"
+      : "thread-value-card--cream";
 
     return (
       <div
         ref={ref}
         className={cn(
-          "p-7.5 relative overflow-hidden",
+          "thread-value-card",
           cornerClass,
-          isSolid ? "bg-[var(--color-thread-mid-green)] text-white" :
-          isMint ? "bg-[#E6F4ED] text-[var(--color-thread-darkest)]" :
-          isWhite ? "bg-white text-[var(--color-thread-darkest)]" :
-          "bg-[var(--color-thread-cream)] text-[var(--color-thread-darkest)]",
-          className
+          toneClassName,
+          className,
+          "border-0"
         )}
         {...props}
       >
         <svg
-          className="absolute -right-[70px] -top-[80px] opacity-15 pointer-events-none"
+          className="thread-value-card__rings"
           width="240"
           height="240"
         >
@@ -62,20 +67,20 @@ export const ValueCard = React.forwardRef<HTMLDivElement, ValueCardProps>(
             strokeWidth="1"
           />
         </svg>
-        <h3 className="text-[1.18rem] font-medium tracking-tight mb-2.5 relative">
+        <h3 className="thread-value-card__title">
           {title}
         </h3>
         {typeof content === 'string' ? (
           <p
             className={cn(
-              "text-[0.92rem] leading-relaxed relative",
-              isSolid ? "text-white/85" : "text-[var(--color-thread-gray)]",
+              "thread-value-card__body",
+              isSolid ? "thread-value-card__body--solid" : "thread-value-card__body--muted",
             )}
           >
             {content}
           </p>
         ) : (
-          <div className="relative text-[0.92rem]">
+          <div className="thread-value-card__body">
             {content}
           </div>
         )}

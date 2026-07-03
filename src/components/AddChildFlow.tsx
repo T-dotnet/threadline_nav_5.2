@@ -57,6 +57,16 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
     }
     return 'welcome';
   });
+  const setupProgressClass =
+    step === 'welcome'
+      ? 'thread-setup-flow-progress--empty'
+      : step === 1
+      ? 'thread-setup-flow-progress--quarter'
+      : step === 2
+      ? 'thread-setup-flow-progress--half'
+      : step === 3
+      ? 'thread-setup-flow-progress--three-quarter'
+      : 'thread-setup-flow-progress--full';
   const [qSection, setQSection] = useState<string | null>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -388,13 +398,13 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
   const choiceClass = (selected: boolean) => cn(
     "px-5 py-2.5 rounded-full text-[0.84rem] font-medium transition-all border shadow-none cursor-pointer inline-flex items-center gap-2 min-h-[40px]",
     selected
-      ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--color-thread-heading)]"
+      ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--style-light-surface-text)]"
       : "bg-white border-black/10 text-[var(--color-thread-gray)] hover:border-black/20 hover:text-[var(--color-thread-heading)]"
   );
   const questionOptionClass = (selected: boolean) => cn(
     "w-full p-4 rounded-tr-[20px] border text-left flex items-center justify-between group transition-all duration-200 cursor-pointer shadow-none",
     selected
-      ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)]/30 text-[var(--color-thread-heading)] font-medium"
+      ? "bg-[var(--color-thread-light-green)] border-[var(--color-thread-mid-green)]/30 text-[var(--style-light-surface-text)] font-medium"
       : "bg-white border-black/10 text-[var(--color-thread-dark-slate)] hover:border-black/20 hover:bg-[var(--color-thread-off-white)]/60"
   );
   return (
@@ -413,11 +423,10 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
         "flex-1 w-full bg-transparent px-4 sm:px-6 md:px-8 flex items-start justify-center",
         asModal ? "overflow-y-auto py-8" : "py-8 sm:py-12 md:py-16"
       )}>
-        <div className="max-w-4xl w-full bg-white rounded-tr-[36px] shadow-premium border border-black/5 flex flex-col md:flex-row overflow-hidden min-h-[640px] relative">
+        <div className="max-w-4xl w-full bg-white rounded-tr-[36px] shadow-premium flex flex-col md:flex-row overflow-hidden min-h-[640px] relative">
           {step !== 'done' && !isDirectSessionModal && (
             <div
-              className="absolute left-0 top-0 h-1 bg-[var(--color-thread-mid-green)] transition-all duration-500 z-10"
-              style={{ width: step === 'welcome' ? '0%' : `${Math.min(1, (step as number) / 4) * 100}%` }}
+              className={cn("thread-setup-flow-progress", setupProgressClass)}
             />
           )}
           
@@ -580,7 +589,7 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.97 }}
                         transition={{ duration: 0.3 }}
-                        className="relative z-10 w-full max-w-2xl bg-white rounded-tr-[36px] shadow-modal border border-black/5 flex flex-col max-h-[90vh] overflow-hidden"
+                        className="relative z-10 w-full max-w-2xl bg-white rounded-tr-[36px] shadow-modal flex flex-col max-h-[90vh] overflow-hidden"
                       >
                         <div className="flex flex-col h-full justify-between min-h-[480px]">
                           {/* Header / Nav-back */}
@@ -632,7 +641,7 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
                                   return (
                                     <div key={q.id} className="space-y-8">
                                       <div className="space-y-4">
-                                        <div className="inline-flex rounded-tr-[18px] rounded-bl-[18px] bg-[var(--color-thread-light-green)]/70 px-4 py-2 text-[0.86rem] font-medium text-[var(--color-thread-heading)] mb-2">
+                                        <div className="inline-flex rounded-tr-[18px] rounded-bl-[18px] bg-[var(--color-thread-light-green)]/70 px-4 py-2 text-[0.86rem] font-medium text-[var(--style-light-surface-text)] mb-2">
                                           {getConversationLead(qSection || '', activeQuestionIndex)}
                                         </div>
                                         <div className="flex items-start gap-3">
@@ -708,7 +717,7 @@ export default function AddChildFlow({ onComplete, onCancel, asModal, initialSte
                                               onChange={(e) => handleTextChange(q.id, e.target.value)}
                                               placeholder={q.placeholder || "Type your answer here..."}
                                               rows={3}
-                                              className="w-full bg-[var(--color-thread-off-white)]/50 border border-black/10 rounded-tr-[24px] p-4 text-[var(--color-thread-dark-slate)] placeholder:text-[var(--color-thread-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-thread-mid-green)]/20 focus:border-[var(--color-thread-mid-green)]/30 transition-all font-sans text-[0.95rem] resize-none"
+                                              className="thread-textarea thread-textarea--soft thread-textarea--compact"
                                             />
                                             <div className="flex items-center gap-3">
                                               <Button

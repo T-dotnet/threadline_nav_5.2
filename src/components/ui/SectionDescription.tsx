@@ -10,7 +10,7 @@ export function SectionDescription({ children, className, ...props }: SectionDes
   return (
     <p 
       className={cn(
-        "text-[1rem] text-[var(--color-thread-gray)] leading-relaxed max-w-[64ch]",
+        "thread-section-description",
         className
       )}
       {...props}

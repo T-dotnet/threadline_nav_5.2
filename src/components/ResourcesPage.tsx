@@ -33,10 +33,10 @@ export default function ResourcesPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
-  const isLiam = isMaintenancePhase(currentChild);
-  const isNoahStarting = isPlanNotStarted(currentChild);
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const isStartingPlan = isPlanNotStarted(currentChild);
   const isNew = Boolean(currentChild.isNew);
-  const showParentClarity = isParentClarity && !isNew && !isLiam && !isNoahStarting;
+  const showParentClarity = isParentClarity && !isNew && !isMaintenancePlan && !isStartingPlan;
 
   useEffect(() => {
     setFilter("all");
@@ -90,15 +90,15 @@ export default function ResourcesPage() {
         <div className="relative rounded-br-[36px] p-12 bg-watercolor">
           <HeroQuoteCard
             kicker="Featured guide"
-            quote={isNew ? "Preparing for the first session." : isLiam ? "Fostering long-term developmental velocity." : isNoahStarting ? "Starting the first support plan." : showParentClarity ? "Start with the school support pack." : "Starting the upcoming school term with confidence."}
+            quote={isNew ? "Preparing for the first session." : isMaintenancePlan ? "Fostering long-term developmental velocity." : isStartingPlan ? "Starting the first support plan." : showParentClarity ? "Start with the school support pack." : "Starting the upcoming school term with confidence."}
             showQuotes={false}
             className="mb-0 shadow-premium"
             description={
               isNew ? (
                 `A simple way to gather notes, examples, and questions before ${currentChild.name}'s first assessment.`
-              ) : isLiam ? (
+              ) : isMaintenancePlan ? (
                 `Advanced strategies for ${currentChild.name} to generalise his social integration wins into diverse, unstructured environments.`
-              ) : isNoahStarting ? (
+              ) : isStartingPlan ? (
                 `Simple starter resources for ${currentChild.name}'s first support routine, focused on getting to the first useful progress signal.`
               ) : showParentClarity ? (
                 `The most useful resource right now is the teacher-facing pack: a plain summary of what helps ${currentChild.name} focus, plus small classroom changes to try first.`

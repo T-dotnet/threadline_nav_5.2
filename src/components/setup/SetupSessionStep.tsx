@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowLeft, Clock } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { DEFAULT_CLINICIAN_NAME, DEFAULT_CLINICIAN_SHORT_NAME } from "../../lib/clinicalProvider";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import clinicianPhoto from "../../assets/images/optimized/dr-naomi-clark-720.jpg";
@@ -77,7 +78,7 @@ export function SetupSessionStep({
       </div>
 
       {isDirectSessionModal && isAppointmentCancelled && (
-        <div className="rounded-tr-[24px] bg-[var(--color-thread-light-green)]/60 p-4 text-sm text-[var(--color-thread-heading)]">
+        <div className="rounded-tr-[24px] bg-[var(--color-thread-light-green)]/60 p-4 text-sm text-[var(--style-light-surface-text)]">
           Appointment cancelled. You can choose a new time below, or close this window.
         </div>
       )}
@@ -93,7 +94,7 @@ export function SetupSessionStep({
                 {currentAppointmentDate}
               </div>
               <div className="mt-1 text-sm text-slate-500">
-                {currentAppointmentTime} · Telehealth with Dr. Naomi Clark
+                {currentAppointmentTime} · Telehealth with {DEFAULT_CLINICIAN_NAME}
               </div>
             </div>
             <span className="text-[0.78rem] text-slate-400">
@@ -132,16 +133,16 @@ export function SetupSessionStep({
             <div className="bg-[var(--color-thread-off-white)]/70 p-5 rounded-tr-[24px] shadow-none flex items-start gap-4">
               <img
                 src={clinicianPhoto}
-                alt="Dr. Naomi Clark"
+                alt={DEFAULT_CLINICIAN_NAME}
                 className="w-16 h-16 rounded-full object-cover flex-shrink-0 border border-black/5 shadow-sm"
                 loading="lazy"
                 decoding="async"
                 referrerPolicy="no-referrer"
               />
               <div>
-                <h4 className="font-medium text-[var(--color-thread-heading)]">Dr. Naomi Clark</h4>
+                <h4 className="font-medium text-[var(--color-thread-heading)]">{DEFAULT_CLINICIAN_NAME}</h4>
                 <p className="text-xs text-slate-400 mb-2">Consultant Child Psychologist · PhD, MAPS</p>
-                <p className="text-xs text-slate-500 leading-relaxed max-w-md">Dr Clark specializes in developmental profiles and child-centered environments. She leads the review of {childLabel}&apos;s profile and works with your family for this appointment.</p>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-md">{DEFAULT_CLINICIAN_SHORT_NAME} specializes in developmental profiles and child-centered environments. She leads the review of {childLabel}&apos;s profile and works with your family for this appointment.</p>
               </div>
             </div>
           )}
@@ -157,7 +158,7 @@ export function SetupSessionStep({
                     className={cn(
                       "w-[4.5rem] py-3 rounded-tr-[20px] flex flex-col items-center justify-center border transition-all shadow-none cursor-pointer",
                       sessionDay === day.num
-                        ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--color-thread-heading)] font-semibold scale-[1.02]"
+                        ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--style-light-surface-text)] font-semibold scale-[1.02]"
                         : "bg-white border-black/10 text-slate-600 hover:border-black/20 hover:bg-[var(--color-thread-off-white)]/60",
                     )}
                   >
@@ -182,7 +183,7 @@ export function SetupSessionStep({
                       className={cn(
                         "px-5 py-2.5 rounded-tr-[20px] text-sm font-medium transition-all border shadow-none cursor-pointer flex flex-col items-center justify-center gap-0.5 min-w-[5.5rem]",
                         sessionTime === time
-                          ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--color-thread-heading)] font-semibold"
+                          ? "bg-[var(--color-thread-light-green)] border-transparent text-[var(--style-light-surface-text)] font-semibold"
                           : "bg-white border-black/10 text-slate-600 hover:border-black/20 hover:bg-[var(--color-thread-off-white)]/60",
                       )}
                     >

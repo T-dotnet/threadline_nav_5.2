@@ -41,9 +41,9 @@ export default function EmergingDetailsPage({
   onPageChange: (page: Page) => void;
 }) {
   const { currentChild } = useCurrentChild();
-  const isLiam = isMaintenancePhase(currentChild);
-  const focusTopic = isLiam ? "Social Leadership" : "Sleep";
-  const focusDescription = isLiam 
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const focusTopic = isMaintenancePlan ? "Social Leadership" : "Sleep";
+  const focusDescription = isMaintenancePlan
     ? `We believe advanced social mentoring is the highest leverage area for ${currentChild.name} right now, leveraging his clinical mastery into peer leadership.`
     : `We believe improving sleep is the highest leverage area for ${currentChild.name} right now, acting as a foundation for attention and mood.`;
 
@@ -67,7 +67,7 @@ export default function EmergingDetailsPage({
               { icon: Clock, children: "Updated 14 June 2026" },
               {
                 icon: Search,
-                children: isLiam ? "Consolidated from recent mastery" : "Emerging from recent observations",
+                children: isMaintenancePlan ? "Consolidated from recent mastery" : "Emerging from recent observations",
               },
             ]}
           />
@@ -78,8 +78,8 @@ export default function EmergingDetailsPage({
       <HeroQuoteCard
         kicker="The picture so far"
         quote={focusDescription}
-        evidenceLevel={isLiam ? 3 : 2}
-        evidenceText={isLiam ? "High, consolidated evidence" : "Moderate, emerging evidence"}
+        evidenceLevel={isMaintenancePlan ? 3 : 2}
+        evidenceText={isMaintenancePlan ? "High, consolidated evidence" : "Moderate, emerging evidence"}
         className="mb-24"
         rightNode={
           <HeroActionCard
@@ -103,22 +103,22 @@ export default function EmergingDetailsPage({
 
         <div className="border-b border-black/10">
           <AreaItem
-            title={isLiam ? "Role modeling" : "Emotional regulation"}
-            impact={isLiam ? "Expected outcome: Mentor confidence" : "Expected outcome: Better mood and fewer meltdowns"}
+            title={isMaintenancePlan ? "Role modeling" : "Emotional regulation"}
+            impact={isMaintenancePlan ? "Expected outcome: Mentor confidence" : "Expected outcome: Better mood and fewer meltdowns"}
             evidence={3}
-            description={isLiam 
-              ? `Liam starts to guide peers through conflict resolution using the same strategies he once mastered himself.` 
+            description={isMaintenancePlan
+              ? `Liam starts to guide peers through conflict resolution using the same strategies he once mastered himself.`
               : "When sleep is consistent, the neurological capacity to manage frustration increases significantly."}
-            sources={isLiam ? ["Observation", "Preschool staff"] : ["Parent Reports", "Clinical Observation"]}
+            sources={isMaintenancePlan ? ["Observation", "Preschool staff"] : ["Parent Reports", "Clinical Observation"]}
           />
           <AreaItem
-            title={isLiam ? "Project duration" : "School participation"}
-            impact={isLiam ? "Expected outcome: 60min+ engagement" : "Expected outcome: Increased focus in morning blocks"}
+            title={isMaintenancePlan ? "Project duration" : "School participation"}
+            impact={isMaintenancePlan ? "Expected outcome: 60min+ engagement" : "Expected outcome: Increased focus in morning blocks"}
             evidence={3}
-            description={isLiam 
+            description={isMaintenancePlan
               ? `Demonstrating extreme mastery in complex, multi-day building projects without losing integration.`
               : `Reducing 'attention fog' caused by cumulative fatigue helps ${currentChild.name} engage more deeply with classmates.`}
-            sources={isLiam ? ["Clinical data"] : ["Teacher Feedback"]}
+            sources={isMaintenancePlan ? ["Clinical data"] : ["Teacher Feedback"]}
           />
         </div>
       </FadeInScroll>

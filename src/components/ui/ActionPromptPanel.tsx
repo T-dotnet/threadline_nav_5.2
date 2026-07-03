@@ -21,7 +21,7 @@ export function ActionPromptPanel({
 }: ActionPromptPanelProps) {
   return (
     <div className={cn("bg-watercolor rounded-br-[36px] p-6 sm:p-8", className)}>
-      <div className="bg-white rounded-tr-[28px] p-6 sm:p-8 border border-black/5 shadow-premium flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+      <div className="bg-white rounded-tr-[28px] p-6 sm:p-8 shadow-premium flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div className="max-w-[60ch] lg:pr-8">
           <SectionLabel>{label}</SectionLabel>
           <SectionTitle>{title}</SectionTitle>

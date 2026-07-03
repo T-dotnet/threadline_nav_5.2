@@ -3,7 +3,7 @@ import { Plus, Check, Trash2, X, ShieldCheck, ShieldHalf } from "lucide-react";
 import { Child, Page } from "../types";
 import { cn } from "../lib/utils";
 import { useState } from "react";
-import { getChildSubheading } from "../lib/childStatus";
+import { getChildReviewDate, getChildSubheading } from "../lib/childStatus";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
@@ -26,8 +26,8 @@ export default function SettingsPage({
   onAddChildRequest,
 }: SettingsPageProps) {
   const { currentChild, childrenList, setChild, deleteChild } = useCurrentChild();
-  const [nickname, setNickname] = useState("Sarah");
-  const [email, setEmail] = useState("sarah@example.com");
+  const [nickname, setNickname] = useState("Primary parent");
+  const [email, setEmail] = useState("parent@example.com");
   const [receiveNotifications, setReceiveNotifications] = useState(true);
 
   // Secondary user access (partner, teacher, carer, etc.) — persisted via context.
@@ -69,12 +69,7 @@ export default function SettingsPage({
 
   const getNextReview = (child: Child) => {
     if (child.isNew) return getChildSubheading(child);
-    const name = child.name;
-    if (name === "Maya") return "12 September";
-    if (name === "Liam") return "12 December";
-    if (name === "Noah") return "8 October";
-    if (name === "Sophia") return "24 September";
-    return "12 September";
+    return getChildReviewDate(child);
   };
 
   return (
@@ -190,7 +185,7 @@ export default function SettingsPage({
                   className={cn(
                     "bg-white p-6 transition-all flex items-center justify-between gap-6",
                     isActive
-                      ? "shadow-sm shadow-[var(--color-thread-mid-green)]/20"
+                      ? "thread-profile-card--active"
                       : "shadow-premium-light hover:shadow-md",
                     cornerClass,
                   )}
@@ -268,7 +263,7 @@ export default function SettingsPage({
               Add secondary user
             </button>
           ) : (
-            <div className="bg-white rounded-tr-[36px] p-8 shadow-premium-light border border-black/5 mb-6">
+            <div className="bg-white rounded-tr-[36px] p-8 shadow-premium-light mb-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium text-[1.05rem] text-slate-900 tracking-tight">
                   Invite secondary user
@@ -308,7 +303,7 @@ export default function SettingsPage({
                       className={cn(
                         "px-4 py-2 rounded-full text-[0.82rem] font-medium border transition-colors min-h-[40px]",
                         newUserRole === role
-                          ? "border-[var(--color-thread-mid-green)] bg-[var(--color-thread-light-green)]/40 text-[var(--color-thread-heading)]"
+                          ? "border-[var(--color-thread-mid-green)] bg-[var(--color-thread-light-green)]/40 text-[var(--style-light-surface-text)]"
                           : "border-black/10 text-slate-600 hover:border-black/20 bg-white"
                       )}
                     >

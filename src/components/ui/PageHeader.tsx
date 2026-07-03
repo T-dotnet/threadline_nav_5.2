@@ -14,28 +14,28 @@ interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
   ({ className, kicker, title, description, action, titleClassName, titleWidthClassName, kickerClassName, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn('mb-24', className)} {...props}>
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-          <div className="flex-1">
+      <div ref={ref} className={cn('thread-page-header', className)} {...props}>
+        <div className="thread-page-header__layout">
+          <div className="thread-page-header__body">
             {kicker && (
               <span className={cn(
-                "text-[0.75rem] tracking-[0.1em] uppercase text-[var(--color-thread-mid-green)] font-medium mb-5 block",
+                "thread-page-header__kicker",
                 kickerClassName
               )}>
                 {kicker}
               </span>
             )}
             <h1 className={cn(
-              "font-serif font-normal text-[2.2rem] xs:text-[2.6rem] sm:text-[3.2rem] md:text-[4rem] leading-[1.15] tracking-[-0.075rem] text-[var(--color-thread-heading)] max-w-[22ch]",
+              "thread-page-header__title",
               titleWidthClassName,
               titleClassName
             )}>
               {title}
             </h1>
             {description && (
-              <div className="mt-4.5">
+              <div className="thread-page-header__description-wrap">
                 {typeof description === 'string' ? (
-                  <p className="text-[0.98rem] text-[var(--color-thread-gray)] max-w-[55ch] leading-relaxed">
+                  <p className="thread-page-header__description">
                     {description}
                   </p>
                 ) : (
@@ -45,7 +45,7 @@ export const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
             )}
           </div>
           {action && (
-            <div className="pt-2 md:self-end flex-shrink-0">
+            <div className="thread-page-header__action">
               {action}
             </div>
           )}

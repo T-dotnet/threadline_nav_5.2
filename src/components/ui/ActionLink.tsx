@@ -24,10 +24,10 @@ export const ActionLink = React.forwardRef<HTMLElement, ActionLinkProps>(
 
       switch (resolvedVariant) {
         case 'light':
-          return "text-white/95 hover:text-white font-sans";
+          return "thread-action-link--light";
         case 'default':
         default:
-          return "text-[var(--color-thread-mid-green)] hover:opacity-85 font-sans";
+          return "thread-action-link--default";
       }
     };
 
@@ -37,7 +37,7 @@ export const ActionLink = React.forwardRef<HTMLElement, ActionLinkProps>(
         id={id}
         onClick={onClick}
         className={cn(
-          "inline-flex items-center gap-1.5 text-[0.84rem] font-medium transition-all group/action cursor-pointer py-1.5 min-h-[32px]",
+          "thread-action-link group/action",
           getVariantClasses(),
           className
         )}
@@ -47,7 +47,7 @@ export const ActionLink = React.forwardRef<HTMLElement, ActionLinkProps>(
         {Icon && (
           <Icon
             className={cn(
-              "w-3.5 h-3.5 stroke-[2] transition-transform duration-200 group-hover/action:translate-x-0.5",
+              "thread-action-link__icon",
               iconClassName
             )}
           />

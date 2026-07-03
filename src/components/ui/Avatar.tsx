@@ -12,18 +12,16 @@ export function Avatar({ className, fallback, src, alt, size = "md", ...props }:
   return (
     <div
       className={cn(
-        "rounded-full flex items-center justify-center font-medium transition-all overflow-hidden shrink-0",
-        {
-          "w-[32px] h-[32px] text-[0.82rem]": size === "sm",
-          "w-[40px] h-[40px] text-[0.86rem]": size === "md",
-          "w-[44px] h-[44px] text-[0.86rem]": size === "lg",
-        },
+        "thread-avatar",
+        size === "sm" && "thread-avatar--sm",
+        size === "md" && "thread-avatar--md",
+        size === "lg" && "thread-avatar--lg",
         className
       )}
       {...props}
     >
       {src ? (
-        <img src={src} alt={alt || "Avatar"} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        <img src={src} alt={alt || "Avatar"} className="thread-avatar__image" referrerPolicy="no-referrer" />
       ) : (
         fallback
       )}

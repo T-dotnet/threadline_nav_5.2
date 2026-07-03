@@ -1,4 +1,12 @@
 import { Child } from './types';
+import {
+  getChildReviewDate,
+  getDiagnosticPathwayCardCopy,
+  getSessionDate,
+  isDiagnosticPathway,
+  isMaintenancePhase,
+  isSessionBooked,
+} from './lib/childStatus';
 
 export interface ChildData {
   home: {
@@ -22,69 +30,74 @@ export interface ChildData {
 }
 
 export const getChildData = (child: Child): ChildData => {
-  if (child.name === 'Liam' || child.name === 'Leo' || child.name === 'Nick' || child.name === 'Noah') {
-    const name = child.name;
-    const isLeoOrNick = name === 'Leo' || name === 'Nick' || name === 'Noah';
+  if (isMaintenancePhase(child) || isDiagnosticPathway(child)) {
+    const profileName = child.name;
+    const isDiagnostic = isDiagnosticPathway(child);
+    const diagnosticSessionBooked = isSessionBooked(child);
+    const diagnosticCardCopy = getDiagnosticPathwayCardCopy(child);
+    const reviewDate = getChildReviewDate(child);
+    const sessionDate = getSessionDate(child);
+
     return {
       home: {
-        focusTitle: isLeoOrNick ? 'Pathway selected' : 'Quarter plan complete',
-        focusDescription: isLeoOrNick 
-          ? (name === 'Nick'
-              ? "Your telehealth assessment session with Dr. Naomi Clark is booked. Completing the preparation details gives Dr. Clark rich context."
-              : "The pathway is chosen, but the Diagnostic Assessment hasn't started yet.")
-          : 'Liam has achieved the goals for this quarter. The next Now, Next, and Later order will be set with the clinician after the next review session.',
-        focusAction: isLeoOrNick ? (name === 'Nick' ? 'Prepare for your session' : 'Book appointment') : 'Prepare for the next review',
+        focusTitle: isDiagnostic ? 'Pathway selected' : 'Quarter plan complete',
+        focusDescription: isDiagnostic
+          ? diagnosticSessionBooked
+            ? "The telehealth assessment session is booked. Completing the preparation details gives the clinician rich context."
+            : "The pathway is chosen, but the Diagnostic Assessment hasn't started yet."
+          : `${profileName} has achieved the goals for this quarter. The next Now, Next, and Later order will be set with the clinician after the next review session.`,
+        focusAction: isDiagnostic ? diagnosticCardCopy.buttonText || 'Book appointment' : 'Prepare for the next review',
         timeline: {
-          now: { 
-            title: isLeoOrNick ? 'Diagnostic Assessment' : 'This quarter is complete', 
-            meta: isLeoOrNick ? (name === 'Nick' ? 'Pathway active · Session booked' : 'Pathway active · Session pending') : '100% achieved · Maintenance active', 
-            content: isLeoOrNick 
-              ? (name === 'Nick'
-                  ? "Nick is registered for the Diagnostic Assessment pathway. The telehealth assessment session with Dr. Naomi Clark is booked."
-                  : "Leo is registered for the Diagnostic Assessment pathway. The next step is booking the telehealth assessment session.")
-              : 'Liam has met the current plan goals. Keep the working routines steady while the review evidence is brought together.' 
+          now: {
+            title: isDiagnostic ? 'Diagnostic Assessment' : 'This quarter is complete',
+            meta: isDiagnostic ? (diagnosticSessionBooked ? 'Pathway active · Session booked' : 'Pathway active · Session pending') : '100% achieved · Maintenance active',
+            content: isDiagnostic
+              ? diagnosticSessionBooked
+                ? `${profileName} is registered for the Diagnostic Assessment pathway. The telehealth assessment session is booked.`
+                : `${profileName} is registered for the Diagnostic Assessment pathway. The next step is booking the telehealth assessment session.`
+              : `${profileName} has met the current plan goals. Keep the working routines steady while the review evidence is brought together.`
           },
-          next: { 
-            title: isLeoOrNick ? (name === 'Nick' ? 'Attend assessment session' : 'Book assessment appointment') : 'Next review session', 
-            meta: isLeoOrNick ? (name === 'Nick' ? 'Thu 26 Jun · Telehealth' : 'Action required') : '12 December · Clinician-led reset', 
-            content: isLeoOrNick
-              ? (name === 'Nick'
-                  ? 'Your initial telehealth consultation and clinical assessment with Dr. Naomi Clark is booked for Thursday, 26 June.'
-                  : 'Select a convenient time for the initial telehealth consultation and clinical assessment with Dr. Naomi Clark.')
-              : 'The clinician will use the review to decide whether Liam needs a new Now priority, enrichment goals, or a lighter maintenance rhythm.' 
+          next: {
+            title: isDiagnostic ? (diagnosticSessionBooked ? 'Attend assessment session' : 'Book assessment appointment') : 'Next review session',
+            meta: isDiagnostic ? (sessionDate ? `${sessionDate} · Telehealth` : 'Action required') : `${reviewDate} · Clinician-led reset`,
+            content: isDiagnostic
+              ? diagnosticSessionBooked
+                ? 'Your initial telehealth consultation and clinical assessment is booked.'
+                : 'Select a convenient time for the initial telehealth consultation and clinical assessment.'
+              : `The clinician will use the review to decide whether ${profileName} needs a new Now priority, enrichment goals, or a lighter maintenance rhythm.`
           },
-          later: { 
-            title: isLeoOrNick ? 'Clinical formulation' : 'New priority order', 
-            meta: isLeoOrNick ? 'Following assessment' : 'Set after review · Not decided yet', 
-            content: isLeoOrNick
-              ? `After the session, a complete clinical formulation and quarter plan will be set up to target ${name}'s classroom focus.`
-              : 'The next Now, Next, and Later sequence should not be assumed from the completed plan. It will be agreed after the review conversation.' 
+          later: {
+            title: isDiagnostic ? 'Clinical formulation' : 'New priority order',
+            meta: isDiagnostic ? 'Following assessment' : 'Set after review · Not decided yet',
+            content: isDiagnostic
+              ? `After the session, a complete clinical formulation and quarter plan will be set up to target ${profileName}'s classroom focus.`
+              : 'The next Now, Next, and Later sequence should not be assumed from the completed plan. It will be agreed after the review conversation.'
           }
         },
-        emerging: { 
-          title: isLeoOrNick ? 'Baseline Observations' : 'Sustained Mastery', 
-          description: isLeoOrNick
-            ? `Use the everyday diary to note down what you notice about ${name}'s focus and energy levels before the clinical session.`
-            : 'Liam continues to demonstrate high retention of co-regulation strategies in unstructured settings.' 
+        emerging: {
+          title: isDiagnostic ? 'Baseline Observations' : 'Sustained Mastery',
+          description: isDiagnostic
+            ? `Use the everyday diary to note down what you notice about ${profileName}'s focus and energy levels before the clinical session.`
+            : `${profileName} continues to demonstrate high retention of co-regulation strategies in unstructured settings.`
         }
       },
       understanding: {
-        description: isLeoOrNick
-          ? `${name} is a bright, imaginative child with warm family relationships. Preparing for the Diagnostic Assessment will help connect everyday life patterns with the clinical conversation.`
-          : 'Liam has achieved all current developmental milestones. He is now demonstrating marked improvements in task persistence and creative depth, maintaining 100% goal alignment.',
+        description: isDiagnostic
+          ? `${profileName} is a bright, imaginative child with warm family relationships. Preparing for the Diagnostic Assessment will help connect everyday life patterns with the clinical conversation.`
+          : `${profileName} has achieved all current developmental milestones. He is now demonstrating marked improvements in task persistence and creative depth, maintaining 100% goal alignment.`,
         focusAreas: [
-          { title: 'Self-Correction Mastery', description: `${name} identifies frustration triggers early and self-corrects without intervention in 90% of observed sessions.`, sources: ['You', 'Teacher', 'Clinician'] },
-          { title: 'Task Endurance', description: `${name} can follow multi-step instructions and remain engaged in complex play for over 45 minutes.`, sources: ['You', 'Teacher'] }
+          { title: 'Self-Correction Mastery', description: `${profileName} identifies frustration triggers early and self-corrects without intervention in 90% of observed sessions.`, sources: ['You', 'Teacher', 'Clinician'] },
+          { title: 'Task Endurance', description: `${profileName} can follow multi-step instructions and remain engaged in complex play for over 45 minutes.`, sources: ['You', 'Teacher'] }
         ]
       },
       priorities: {
-        description: isLeoOrNick
-          ? `${name}'s priority plan will be established together with the clinical team following the assessment session.`
-          : 'Liam has met all core priorities for this quarter. The next priority order will be decided after the upcoming review session.'
+        description: isDiagnostic
+          ? `${profileName}'s priority plan will be established together with the clinical team following the assessment session.`
+          : `${profileName} has met all core priorities for this quarter. The next priority order will be decided after the upcoming review session.`
       }
     };
   }
-  
+
   if (child.name === 'Sophia') {
     return {
       home: {

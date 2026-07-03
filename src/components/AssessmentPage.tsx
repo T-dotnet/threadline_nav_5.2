@@ -39,7 +39,8 @@ import { ActionLink } from "./ui/ActionLink";
 import { useCurrentChild } from "../context/ChildContext";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { getChildSessionStatus, getSessionDate } from "../lib/childStatus";
+import { isDiagnosticPathway, usesAssessmentCard, usesCompletedAssessmentReport, getChildSessionStatus, getSessionDate } from "../lib/childStatus";
+import { DEFAULT_CLINICIAN_NAME, DEFAULT_CLINICIAN_SHORT_NAME } from "../lib/clinicalProvider";
 
 import clinicalReportImg from "../assets/images/clinical_report_placeholder_1783000795444.jpg";
 
@@ -47,7 +48,8 @@ export default function AssessmentPage() {
   const { currentChild } = useCurrentChild();
   const navigate = useNavigate();
 
-  const isLeo = currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah";
+  const isDiagnostic = isDiagnosticPathway(currentChild);
+  const showAssessmentPathwayCard = usesAssessmentCard(currentChild);
   
   const sessionStatus = getChildSessionStatus(currentChild);
   const isBooked = sessionStatus === "booked";
@@ -90,7 +92,7 @@ export default function AssessmentPage() {
     },
   ];
 
-  if (currentChild.name === "Noah") {
+  if (usesCompletedAssessmentReport(currentChild)) {
     // Custom assessment page for Noah showing completed assessment session, assessment, and doc upload with report ready.
     // Comment: Representing completed status for Noah where assessment session, assessment, and doc upload are completed and report is ready. Show the hero white card with light green card.
     return (
@@ -108,7 +110,7 @@ export default function AssessmentPage() {
               className="mb-12"
               description={
                 <SectionDescription>
-                  All preparatory steps, telehealth sessions, and document uploads have been completed. Dr. Naomi Clark has finalized Noah's clinical formulation and diagnostic report.
+                  All preparatory steps, telehealth sessions, and document uploads have been completed. {DEFAULT_CLINICIAN_NAME} has finalized Noah's clinical formulation and diagnostic report.
                 </SectionDescription>
               }
             />
@@ -118,7 +120,7 @@ export default function AssessmentPage() {
               kicker="Diagnostic Outcome"
               quote="Noah's clinical formulation and diagnostic report are fully finalized and ready for review."
               showQuotes={false}
-              className="mb-10 bg-white border border-black/5"
+              className="mb-10 bg-white"
               evidenceLevel={3}
               evidenceText="Report Completed"
               evidenceVariant="green"
@@ -127,7 +129,7 @@ export default function AssessmentPage() {
                   icon={<FileText className="w-[22px] h-[22px] stroke-[1.7] text-[var(--color-thread-mid-green)]" />}
                   title="Download Report"
                   subtitle="PDF · 4.2 MB"
-                  className="bg-[var(--color-thread-light-green)] text-[var(--color-thread-heading)] w-[190px] rounded-tl-[28px] hover:bg-[var(--color-thread-light-green)]/90 cursor-pointer"
+                  className="bg-[var(--color-thread-light-green)] text-[var(--style-light-surface-text)] w-[190px] rounded-tl-[28px] hover:bg-[var(--color-thread-light-green)]/90 cursor-pointer"
                   onClick={() => window.open(clinicalReportImg, '_blank')}
                 />
               }
@@ -141,7 +143,7 @@ export default function AssessmentPage() {
                 <SectionLabel>Areas of focus</SectionLabel>
                 <SectionTitle>Assessed clinical domains</SectionTitle>
                 <SectionDescription>
-                  Dr. Naomi Clark's clinical findings across key developmental domains. Click each domain to view observations and supportive next steps.
+                  {DEFAULT_CLINICIAN_NAME}'s clinical findings across key developmental domains. Click each domain to view observations and supportive next steps.
                 </SectionDescription>
               </div>
 
@@ -415,7 +417,7 @@ export default function AssessmentPage() {
     );
   }
 
-  if (currentChild.name === "Leo" || currentChild.name === "Nick") {
+  if (showAssessmentPathwayCard) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 15 }}
@@ -457,7 +459,7 @@ export default function AssessmentPage() {
               {[
                 {
                   title: "Clinical Session",
-                  description: "Telehealth call with Dr. Naomi Clark to discuss developmental history and current challenges.",
+                  description: `Telehealth call with ${DEFAULT_CLINICIAN_NAME} to discuss developmental history and current challenges.`,
                   icon: CalendarClock,
                   path: "/understanding",
                 },
@@ -510,7 +512,7 @@ export default function AssessmentPage() {
                     </div>
 
                     {index === 3 && (
-                      <div className="mt-6 md:mt-0 md:absolute md:right-0 md:bottom-0 w-full md:w-[280px] h-[180px] rounded-[16px] md:rounded-none md:rounded-tl-[24px] overflow-hidden border border-black/5 md:border-t md:border-l md:border-b-0 md:border-r-0 shadow-sm shrink-0">
+                      <div className="mt-6 md:mt-0 md:absolute md:right-0 md:bottom-0 w-full md:w-[280px] h-[180px] rounded-[16px] md:rounded-none md:rounded-tl-[24px] overflow-hidden shadow-sm shrink-0">
                         <img
                           src={clinicalReportImg}
                           alt="Clinical Report Sample"
@@ -539,7 +541,7 @@ export default function AssessmentPage() {
       actionText: completedSections.length >= 8 ? "Review answers" : "Continue questionnaire",
       action: () => navigate("/setup?step=2"),
     },
-    ...(isLeo ? [] : [{
+    ...(isDiagnostic ? [] : [{
       id: "documents",
       title: "Upload school context & letters",
       description: "School reports, pediatrician letters, or occupational therapy feedback help build a collaborative picture.",
@@ -547,7 +549,7 @@ export default function AssessmentPage() {
       actionText: "Manage documents",
       action: () => navigate("/documents"),
     }]),
-    ...(isLeo ? [] : [{
+    ...(isDiagnostic ? [] : [{
       id: "diary",
       title: "Log everyday observations",
       description: "Keep short entries of sleep, focus patterns, or school transitions before your clinical discussion.",
@@ -598,7 +600,7 @@ export default function AssessmentPage() {
               <SectionLabel>Preparation Checklist</SectionLabel>
               <SectionTitle>Prepare for {currentChild.name}'s Session</SectionTitle>
               <SectionDescription>
-                {isLeo ? "Completing the questionnaire gives Dr. Clark rich context to build the clinical formulation." : "Completing these three steps gives Dr. Clark rich context to build the clinical formulation."}
+                {isDiagnostic ? `Completing the questionnaire gives ${DEFAULT_CLINICIAN_SHORT_NAME} rich context to build the clinical formulation.` : `Completing these three steps gives ${DEFAULT_CLINICIAN_SHORT_NAME} rich context to build the clinical formulation.`}
               </SectionDescription>
             </div>
 

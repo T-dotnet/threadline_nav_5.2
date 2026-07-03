@@ -25,7 +25,19 @@ import { useDisplayMode } from "../context/DisplayModeContext";
 import { SetupSummary } from "./ui/SetupSummary";
 import { ModalCloseButton, ModalShell } from "./ui/ModalShell";
 import { getJourneyHomeCopy, hasReportContext } from "../lib/journeyCopy";
-import { getChildSessionStatus, getSessionDate, isMaintenancePhase, isPlanNotStarted } from "../lib/childStatus";
+import { DEFAULT_CLINICIAN_SHORT_NAME } from "../lib/clinicalProvider";
+import {
+  getChildReviewDate,
+  getChildSessionStatus,
+  getChildSubheading,
+  getDiagnosticPathwayCardCopy,
+  getSessionDate,
+  isDiagnosticPathway,
+  isMaintenancePhase,
+  isPlanNotStarted,
+  isSessionPreviewUnavailable,
+  usesAssessmentCard,
+} from "../lib/childStatus";
 
 const newChildPreviewCards = [
   {
@@ -65,40 +77,43 @@ export default function HomePage({
   const [isZeroProgressMomentOpen, setIsZeroProgressMomentOpen] = useState(false);
   const data = getChildData(currentChild).home;
 
-  const isLiam = isMaintenancePhase(currentChild);
-  const isNoahStarting = isPlanNotStarted(currentChild);
-  const showParentClarity = isParentClarity && !currentChild.isNew && !isLiam && !isNoahStarting;
+  const isMaintenancePlan = isMaintenancePhase(currentChild);
+  const isStartingPlan = isPlanNotStarted(currentChild);
+  const isDiagnostic = isDiagnosticPathway(currentChild);
+  const sessionPreviewUnavailable = isSessionPreviewUnavailable(currentChild);
+  const showAssessmentCard = usesAssessmentCard(currentChild);
+  const diagnosticCardCopy = getDiagnosticPathwayCardCopy(currentChild);
+  const showParentClarity = isParentClarity && !currentChild.isNew && !isMaintenancePlan && !isStartingPlan;
   const newChildHomeCopy = getJourneyHomeCopy(
     currentChild.name,
     currentChild.intake?.journeyStage,
     hasReportContext(currentChild.intake?.availableInfo)
   );
-  const synthesisQuote = (currentChild.name === "Leo" || currentChild.name === "Noah")
+  const synthesisQuote = isDiagnostic && sessionPreviewUnavailable
     ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet."
-    : currentChild.name === "Nick"
-    ? "Your telehealth assessment session with Dr. Naomi Clark is booked. Completing the preparation details gives Dr. Clark rich context."
-    : isLiam 
-    ? "Liam has achieved all current developmental milestones for this phase; focus now shifts to long-term enrichment and peer-leadership skills."
-    : isNoahStarting
-      ? "Noah's first quarter plan is ready. Progress is still at 0%, so the focus is simply starting the first support routine and noticing what changes."
-    : currentChild.isNew 
+    : isDiagnostic
+    ? `Your telehealth assessment session is booked. Completing the preparation details gives ${DEFAULT_CLINICIAN_SHORT_NAME} rich context.`
+    : isMaintenancePlan
+    ? `${currentChild.name} has achieved all current developmental milestones for this phase; focus now shifts to long-term enrichment and peer-leadership skills.`
+    : isStartingPlan
+      ? `${currentChild.name}'s first quarter plan is ready. Progress is still at 0%, so the focus is simply starting the first support routine and noticing what changes.`
+    : currentChild.isNew
       ? newChildHomeCopy.quote
       : showParentClarity
       ? `${currentChild.name}'s main working thread is classroom focus. The plan is helping attention improve first, while we keep an eye on sleep because it can make focus fluctuate.`
       : "Maya is showing marked improvements in auditory processing, though focus remains heavily tethered to circadian stability.";
-  
+
   const sessionStatus = getChildSessionStatus(currentChild);
-  const isLeoOrAva = currentChild.name === "Leo" || currentChild.name === "Ava" || currentChild.name === "Noah";
-  const isSessionBooked = isLeoOrAva ? false : sessionStatus === "booked";
-  const isSessionCancelled = isLeoOrAva ? false : sessionStatus === "cancelled";
+  const isSessionBooked = sessionPreviewUnavailable ? false : sessionStatus === "booked";
+  const isSessionCancelled = sessionPreviewUnavailable ? false : sessionStatus === "cancelled";
   const firstSessionDate = getSessionDate(currentChild, "long") ?? "Choose your path";
   const firstSessionTime = isSessionBooked ? currentChild.intake?.sessionTime || "4:00 pm" : isSessionCancelled ? "Cancelled" : "Choose your path";
-  const progressValue = (isLeoOrAva && !isSessionBooked) ? 0 : isLiam ? 100 : isNoahStarting ? 0 : currentChild.isNew ? 0 : 65;
-  const progressStatus = (isLeoOrAva && !isSessionBooked)
+  const progressValue = (sessionPreviewUnavailable && !isSessionBooked) ? 0 : isMaintenancePlan ? 100 : isStartingPlan ? 0 : currentChild.isNew ? 0 : 65;
+  const progressStatus = (sessionPreviewUnavailable && !isSessionBooked)
     ? "not booked — session pending"
-    : isLiam
+    : isMaintenancePlan
     ? "all goals met — maintenance phase"
-    : isNoahStarting
+    : isStartingPlan
     ? "not started — first actions ready"
     : currentChild.isNew
     ? isSessionBooked
@@ -107,8 +122,9 @@ export default function HomePage({
       ? "session cancelled — choose your path"
       : "choose your path"
     : "on track — steady progress";
-  const nextReview = (isLeoOrAva && !isSessionBooked) ? "Not booked" : isLiam ? "12 December" : isNoahStarting ? "Not booked" : currentChild.isNew ? firstSessionDate : "12 September";
-  const evidenceTag = (currentChild.name === "Leo" || currentChild.name === "Nick" || currentChild.name === "Noah") ? "Diagnostic Assessment" : currentChild.name === "Ava" ? "Assessment pending" : isLiam ? "Consolidated" : isNoahStarting ? "Baseline" : currentChild.isNew ? "Initial" : "Emerging";
+  const nextReview = (sessionPreviewUnavailable && !isSessionBooked) ? "Not booked" : isMaintenancePlan ? getChildReviewDate(currentChild) : isStartingPlan ? "Not booked" : currentChild.isNew ? firstSessionDate : getChildReviewDate(currentChild);
+  const childSubheading = getChildSubheading(currentChild);
+  const evidenceTag = isDiagnostic ? "Diagnostic Assessment" : childSubheading === "Assessment pending" ? "Assessment pending" : isMaintenancePlan ? "Consolidated" : isStartingPlan ? "Baseline" : currentChild.isNew ? "Initial" : "Emerging";
   const sessionDetails = currentChild.isNew
     ? [
         {
@@ -138,7 +154,7 @@ export default function HomePage({
     : `threadline-zero-progress-moment-${currentChild.name}`;
 
   useEffect(() => {
-    if (!isNoahStarting) {
+    if (!isStartingPlan) {
       setIsZeroProgressMomentOpen(false);
       return;
     }
@@ -150,7 +166,7 @@ export default function HomePage({
     }
 
     setIsZeroProgressMomentOpen(true);
-  }, [isNoahStarting, zeroProgressMomentKey]);
+  }, [isStartingPlan, zeroProgressMomentKey]);
 
   const closeZeroProgressMoment = () => {
     try {
@@ -239,7 +255,7 @@ export default function HomePage({
       <PageContainer>
         <PageHeader
         kicker={currentChild.isNew ? newChildHomeCopy.kicker : "Tuesday · Good morning"}
-        title={currentChild.isNew ? newChildHomeCopy.title : isLiam ? `${currentChild.name} has completed this quarter's plan, Sarah.` : "Here's where to put your energy today, Sarah."}
+        title={currentChild.isNew ? newChildHomeCopy.title : isMaintenancePlan ? `${currentChild.name} has completed this quarter's plan.` : "Here's where to put your energy today."}
         titleClassName="md:leading-[4.5rem]"
         titleWidthClassName="max-w-[18ch]"
         className={currentChild.isNew ? "mb-12" : "mb-28"}
@@ -275,18 +291,18 @@ export default function HomePage({
         <div className="flex flex-col max-md:gap-y-6 md:contents">
           {/* Stat Card */}
           <FadeInScroll delay={0.1} className="md:col-start-2 md:row-start-1 md:h-full md:flex md:flex-col w-full">
-            {currentChild.isNew || currentChild.name === "Leo" || currentChild.name === "Nick" ? (
+            {currentChild.isNew || showAssessmentCard ? (
                 <FirstSessionCard
                   className="w-full h-full"
-                  isBooked={(currentChild.name === "Leo") ? false : isSessionBooked}
-                  isCancelled={(currentChild.name === "Leo") ? false : isSessionCancelled}
+                  isBooked={sessionPreviewUnavailable ? false : isSessionBooked}
+                  isCancelled={sessionPreviewUnavailable ? false : isSessionCancelled}
                   date={firstSessionDate}
                   time={firstSessionTime}
-                  titleText={(currentChild.name === "Leo" || currentChild.name === "Nick") ? "Diagnostic Assessment" : undefined}
-                  descriptionText={(currentChild.name === "Leo") ? "The pathway is chosen, but the Diagnostic Assessment hasn't started yet." : undefined}
-                  buttonText={(currentChild.name === "Leo") ? "Book appointment" : undefined}
+                  titleText={showAssessmentCard ? diagnosticCardCopy.titleText : undefined}
+                  descriptionText={showAssessmentCard ? diagnosticCardCopy.descriptionText : undefined}
+                  buttonText={showAssessmentCard && sessionPreviewUnavailable ? diagnosticCardCopy.buttonText : undefined}
                   onBook={() => {
-                    if (currentChild.name === "Leo" || currentChild.name === "Nick") {
+                    if (showAssessmentCard) {
                       onOpenSetup?.(5);
                     } else {
                       onShowPathway?.(currentChild);
@@ -302,8 +318,8 @@ export default function HomePage({
                 title="This quarter's plan"
                 details={sessionDetails}
                 className="w-full h-full"
-                onReschedule={isNoahStarting ? () => onOpenSetup?.(5) : undefined}
-                rescheduleLabel={isNoahStarting ? "Book now" : undefined}
+                onReschedule={isStartingPlan ? () => onOpenSetup?.(5) : undefined}
+                rescheduleLabel={isStartingPlan ? "Book now" : undefined}
               />
             )}
           </FadeInScroll>
@@ -329,34 +345,34 @@ export default function HomePage({
           <>
             <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2.5 sm:gap-4 mb-4">
               <span className="text-[0.75rem] tracking-[0.1em] uppercase text-[var(--color-thread-mid-green)] font-medium">
-                {isLiam ? "Completed quarter · Next review" : "Now · Next · Later"}
+                {isMaintenancePlan ? "Completed quarter · Next review" : "Now · Next · Later"}
               </span>
               <ActionLink
                 variant="default"
                 as="button"
                 onClick={() => onPageChange("priorities")}
               >
-                {isLiam ? "Open review priorities" : "View all priorities"}
+                {isMaintenancePlan ? "Open review priorities" : "View all priorities"}
               </ActionLink>
             </div>
 
             <div className="mt-1.5 flex flex-col">
               <TimelineItem
-                tag={isLiam ? "New" : "Now"}
+                tag={isMaintenancePlan ? "New" : "Now"}
                 title={data.timeline.now.title}
                 meta={data.timeline.now.meta}
                 content={data.timeline.now.content}
-                progress={isLiam ? 100 : isNoahStarting ? 0 : 35}
+                progress={isMaintenancePlan ? 100 : isStartingPlan ? 0 : 35}
                 isFirst
                 active
                 isCollapsible
               />
               <TimelineItem
-                tag={isLiam ? "Then" : "Next"}
+                tag={isMaintenancePlan ? "Then" : "Next"}
                 title={data.timeline.next.title}
                 meta={data.timeline.next.meta}
                 content={data.timeline.next.content}
-                progress={isLiam ? 0 : isNoahStarting ? 0 : 15}
+                progress={isMaintenancePlan ? 0 : isStartingPlan ? 0 : 15}
                 isCollapsible
               />
               <TimelineItem
@@ -401,7 +417,7 @@ export default function HomePage({
               return (
                 <div
                   key={card.title}
-                  className={`bg-white border border-black/5 shadow-premium-light p-6 ${corners[index]}`}
+                  className={`bg-white shadow-premium-light p-6 ${corners[index]}`}
                 >
                   <div className="w-10 h-10 rounded-full bg-[var(--color-thread-light-green)] text-[var(--color-thread-mid-green)] flex items-center justify-center mb-5">
                     <Icon className="w-5 h-5 stroke-[1.8]" />
@@ -421,9 +437,9 @@ export default function HomePage({
           className="mt-20"
           kicker="On the watchlist"
           title="Sleep"
-          description={isLiam
+          description={isMaintenancePlan
             ? "Liam's sleep hygiene remains optimal. We are maintaining current wind-down routines to support his high-performance learning phases."
-            : isNoahStarting
+            : isStartingPlan
             ? "Noah's first plan has just started, so sleep is a baseline signal to watch rather than something to turn into a separate task today."
             : showParentClarity
             ? `${currentChild.name}'s sleep is not the main priority today, but it may explain why focus still changes from day to day. Keep the routine steady and we will only move it up if the signal grows.`
