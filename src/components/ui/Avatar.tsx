@@ -23,7 +23,7 @@ export function Avatar({ className, fallback, src, alt, size = "md", ...props }:
       {...props}
     >
       {src ? (
-        <img src={src} alt={alt || "Avatar"} className="w-full h-full object-cover" />
+        <img src={src} alt={alt || "Avatar"} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
       ) : (
         fallback
       )}

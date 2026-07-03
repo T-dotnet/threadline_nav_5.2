@@ -165,6 +165,7 @@ export function DiaryEntryForm({
                         src={attachment.dataUrl}
                         alt={attachment.name}
                         className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
                       />
                     ) : (
                       <FileText className="w-5 h-5 text-[var(--color-thread-mid-green)] stroke-[1.8]" />

@@ -134,7 +134,7 @@ export function ReflectionDeck({
                     {questionnaireSignals.map((signal, index) => (
                       <motion.div
                         key={signal.key}
-                        className="flex items-start gap-3 text-[0.98rem] text-[var(--color-thread-heading)]"
+                        className="flex items-center gap-3 text-[0.98rem] text-[var(--color-thread-heading)]"
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.26, ease: 'easeOut', delay: 0.08 + index * 0.05 }}
@@ -143,10 +143,7 @@ export function ReflectionDeck({
                           <Check className="w-4 h-4" />
                         </span>
                         <span className="min-w-0">
-                          <span className="block">{signal.label}</span>
-                          <span className="mt-1 block text-[0.78rem] leading-relaxed text-[var(--color-thread-gray)]">
-                            {signal.sources.slice(0, 2).join(' · ')}
-                          </span>
+                          <span className="block font-medium">{signal.label}</span>
                         </span>
                       </motion.div>
                     ))}

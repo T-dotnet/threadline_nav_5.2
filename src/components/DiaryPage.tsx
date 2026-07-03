@@ -407,6 +407,7 @@ export default function DiaryPage() {
               src={cardImage}
               alt={imageAttachment?.name || "Watercolor diary background"}
               className="absolute inset-0 w-full h-full object-cover"
+              referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/35 to-slate-950/10" />
           </>
